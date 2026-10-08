@@ -1,256 +1,167 @@
 {
-  "checked_at": "2026-10-08T04:18:31.859276+00:00",
+  "checked_at": "2026-10-08T04:45:11.225332+00:00",
   "last_asia_update": null,
-  "state": "no_asian_candidates",
+  "last_list_update": "2026-10-08T04:45:11.225332+00:00",
+  "state": "partial",
   "scanner": "CFData-WEB v1.8.3",
-  "candidate_count": 480,
-  "reachable_count": 96,
+  "candidate_count": 499,
+  "reachable_count": 119,
   "observed_countries": {
-    "US": 96
+    "CA": 88,
+    "US": 29,
+    "IE": 1,
+    "DE": 1
   },
-  "validated_count": 20,
+  "validated_count": 6,
   "asia_count": 0,
+  "selected_count": 5,
+  "selected_countries": {
+    "US": 5
+  },
+  "allocation": {
+    "target_per_country": 3,
+    "countries": [
+      "SG",
+      "JP",
+      "US"
+    ],
+    "fallback": "US"
+  },
   "asia_list_available": false,
-  "elapsed_seconds": 53,
+  "elapsed_seconds": 54,
   "measurement_origin": "GitHub hosted runner",
   "validated": [
     {
-      "ip": "198.41.216.67",
-      "colo": "SEA",
-      "median_ms": 43.4,
-      "max_ms": 54.8,
+      "ip": "188.114.99.219",
+      "colo": "BOS",
+      "median_ms": 50.5,
+      "max_ms": 69.3,
       "samples_ms": [
-        54.8,
-        36.2,
-        43.4
+        69.3,
+        50.4,
+        50.5
       ],
       "country": "US"
     },
     {
-      "ip": "104.25.122.85",
-      "colo": "SEA",
-      "median_ms": 53.5,
-      "max_ms": 56.0,
+      "ip": "104.25.40.75",
+      "colo": "BOS",
+      "median_ms": 75.1,
+      "max_ms": 76.9,
       "samples_ms": [
-        53.2,
-        56.0,
-        53.5
+        71.4,
+        75.1,
+        76.9
       ],
       "country": "US"
     },
     {
-      "ip": "198.41.215.163",
-      "colo": "SEA",
-      "median_ms": 52.4,
-      "max_ms": 66.0,
+      "ip": "104.27.97.159",
+      "colo": "BOS",
+      "median_ms": 84.9,
+      "max_ms": 93.7,
       "samples_ms": [
-        66.0,
-        52.4,
-        43.1
+        84.9,
+        84.3,
+        93.7
       ],
       "country": "US"
     },
     {
-      "ip": "173.245.58.63",
-      "colo": "SEA",
-      "median_ms": 68.1,
-      "max_ms": 69.1,
+      "ip": "104.27.196.242",
+      "colo": "YYZ",
+      "median_ms": 77.6,
+      "max_ms": 95.4,
       "samples_ms": [
-        64.5,
-        69.1,
-        68.1
+        95.4,
+        70.7,
+        77.6
+      ],
+      "country": "CA"
+    },
+    {
+      "ip": "104.21.208.82",
+      "colo": "BOS",
+      "median_ms": 94.1,
+      "max_ms": 109.1,
+      "samples_ms": [
+        109.1,
+        94.1,
+        86.7
       ],
       "country": "US"
     },
     {
-      "ip": "198.41.205.32",
-      "colo": "SEA",
-      "median_ms": 49.3,
-      "max_ms": 69.7,
+      "ip": "103.31.4.185",
+      "colo": "EWR",
+      "median_ms": 115.1,
+      "max_ms": 118.6,
       "samples_ms": [
-        69.7,
-        49.3,
-        43.1
+        118.6,
+        115.1,
+        92.4
+      ],
+      "country": "US"
+    }
+  ],
+  "selected": [
+    {
+      "ip": "188.114.99.219",
+      "colo": "BOS",
+      "median_ms": 50.5,
+      "max_ms": 69.3,
+      "samples_ms": [
+        69.3,
+        50.4,
+        50.5
       ],
       "country": "US"
     },
     {
-      "ip": "172.64.69.193",
-      "colo": "SEA",
-      "median_ms": 65.0,
-      "max_ms": 71.0,
+      "ip": "104.25.40.75",
+      "colo": "BOS",
+      "median_ms": 75.1,
+      "max_ms": 76.9,
       "samples_ms": [
-        65.0,
-        71.0,
-        64.7
+        71.4,
+        75.1,
+        76.9
       ],
       "country": "US"
     },
     {
-      "ip": "172.67.230.123",
-      "colo": "SEA",
-      "median_ms": 67.3,
-      "max_ms": 71.2,
+      "ip": "104.27.97.159",
+      "colo": "BOS",
+      "median_ms": 84.9,
+      "max_ms": 93.7,
       "samples_ms": [
-        71.2,
-        61.8,
-        67.3
+        84.9,
+        84.3,
+        93.7
       ],
       "country": "US"
     },
     {
-      "ip": "190.93.246.18",
-      "colo": "SEA",
-      "median_ms": 44.0,
-      "max_ms": 73.5,
+      "ip": "104.21.208.82",
+      "colo": "BOS",
+      "median_ms": 94.1,
+      "max_ms": 109.1,
       "samples_ms": [
-        73.5,
-        39.8,
-        44.0
+        109.1,
+        94.1,
+        86.7
       ],
       "country": "US"
     },
     {
-      "ip": "173.245.58.157",
-      "colo": "SEA",
-      "median_ms": 71.0,
-      "max_ms": 73.6,
+      "ip": "103.31.4.185",
+      "colo": "EWR",
+      "median_ms": 115.1,
+      "max_ms": 118.6,
       "samples_ms": [
-        55.2,
-        71.0,
-        73.6
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "172.67.146.130",
-      "colo": "SEA",
-      "median_ms": 74.8,
-      "max_ms": 75.4,
-      "samples_ms": [
-        74.8,
-        66.2,
-        75.4
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "172.64.159.105",
-      "colo": "SEA",
-      "median_ms": 67.5,
-      "max_ms": 77.2,
-      "samples_ms": [
-        77.2,
-        67.5,
-        60.8
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "162.159.195.136",
-      "colo": "SEA",
-      "median_ms": 72.5,
-      "max_ms": 77.4,
-      "samples_ms": [
-        77.4,
-        72.5,
-        56.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "188.114.96.86",
-      "colo": "SEA",
-      "median_ms": 67.0,
-      "max_ms": 80.3,
-      "samples_ms": [
-        67.0,
-        80.3,
-        56.1
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "108.162.192.212",
-      "colo": "SEA",
-      "median_ms": 76.7,
-      "max_ms": 80.5,
-      "samples_ms": [
-        76.7,
-        72.3,
-        80.5
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "190.93.245.130",
-      "colo": "SEA",
-      "median_ms": 77.7,
-      "max_ms": 80.7,
-      "samples_ms": [
-        80.7,
-        77.7,
-        57.5
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "188.114.99.167",
-      "colo": "SEA",
-      "median_ms": 75.7,
-      "max_ms": 83.1,
-      "samples_ms": [
-        83.1,
-        75.7,
-        65.4
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.25.74.117",
-      "colo": "SEA",
-      "median_ms": 76.6,
-      "max_ms": 83.9,
-      "samples_ms": [
-        83.9,
-        76.6,
-        58.3
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "162.159.254.111",
-      "colo": "SEA",
-      "median_ms": 85.6,
-      "max_ms": 89.8,
-      "samples_ms": [
-        85.6,
-        89.8,
-        81.9
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "162.159.235.210",
-      "colo": "SEA",
-      "median_ms": 81.9,
-      "max_ms": 93.6,
-      "samples_ms": [
-        81.9,
-        93.6,
-        77.8
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.24.58.131",
-      "colo": "SEA",
-      "median_ms": 78.3,
-      "max_ms": 100.9,
-      "samples_ms": [
-        77.0,
-        100.9,
-        78.3
+        118.6,
+        115.1,
+        92.4
       ],
       "country": "US"
     }
