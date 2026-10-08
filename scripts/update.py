@@ -18,7 +18,10 @@ from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 WORK = ROOT / '.work'
-REGIONS = {'JP', 'KR', 'SG'}
+COUNTRY_ORDER = ('SG', 'JP', 'US')
+REGIONS = {'JP', 'SG'}
+PER_COUNTRY = 3
+LIST_SIZE = PER_COUNTRY * len(COUNTRY_ORDER)
 VERSION = 'v1.8.3'
 
 
@@ -55,7 +58,7 @@ def prepare():
             city, country, colo = match.groups()
             locations.append({'iata': colo, 'cca2': codes.get(country.strip(), 'OTHER'),
                               'city': city, 'region': country.strip()})
-    if not all(any(r['cca2'] == code for r in locations) for code in REGIONS):
+    if not all(any(r['cca2'] == code for r in locations) for code in COUNTRY_ORDER):
         raise RuntimeError('Official location metadata is missing target countries')
     (WORK / 'locations.json').write_text(json.dumps(locations))
     ranges = json.loads(fetch('https://api.cloudflare.com/client/v4/ips'))
@@ -118,6 +121,19 @@ def write_list(name, rows):
             for i, r in enumerate(rows[:20])))
 
 
+def select_balanced(rows):
+    pools = {country: [] for country in COUNTRY_ORDER}
+    seen = set()
+    for row in sorted(rows, key=lambda r: (r['max_ms'], r['median_ms'])):
+        if row['country'] in pools and row['ip'] not in seen:
+            pools[row['country']].append(row)
+            seen.add(row['ip'])
+    selected = [row for country in COUNTRY_ORDER for row in pools[country][:PER_COUNTRY]]
+    remaining = LIST_SIZE - len(selected)
+    selected.extend(pools['US'][PER_COUNTRY:PER_COUNTRY + remaining])
+    return selected
+
+
 def main():
     started = time.monotonic()
     binary, locations, count = prepare()
@@ -137,9 +153,11 @@ def main():
         with result_file.open(encoding='utf-8-sig', newline='') as handle:
             rows = list(csv.DictReader(handle))
     countries = Counter(location_map.get(row['数据中心'].upper(), 'UNKNOWN') for row in rows)
-    # Validate 40 Asian and 20 unrestricted candidates; preserve both meanings.
-    asian = [r for r in rows if location_map.get(r['数据中心'].upper()) in REGIONS][:40]
-    chosen = {r['IP地址'] for r in asian + rows[:20]}
+    # Reserve equal revalidation budgets so one country cannot crowd out another.
+    chosen = set()
+    for country in COUNTRY_ORDER:
+        candidates = [r for r in rows if location_map.get(r['数据中心'].upper()) == country][:20]
+        chosen.update(r['IP地址'] for r in candidates)
     validated = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
         for row in pool.map(probe, sorted(chosen)):
@@ -149,28 +167,33 @@ def main():
                     validated.append(row)
     validated.sort(key=lambda r: (r['max_ms'], r['median_ms']))
     preferred = [r for r in validated if r['country'] in REGIONS]
+    selected = select_balanced(validated)
     write_list('ip.txt', preferred)
-    write_list('global.txt', validated)
+    write_list('global.txt', selected)
     previous = json.loads((ROOT / 'status.json').read_text()) if (ROOT / 'status.json').exists() else {}
     now = datetime.now(timezone.utc).isoformat()
     status = {'checked_at': now, 'last_asia_update': now if preferred else previous.get('last_asia_update'),
-              'state': 'updated' if preferred else 'no_asian_candidates',
+              'last_list_update': now if selected else previous.get('last_list_update'),
+              'state': 'updated' if len(selected) == LIST_SIZE else 'partial' if selected else 'no_candidates',
               'scanner': 'CFData-WEB ' + VERSION, 'candidate_count': count,
               'reachable_count': len(rows), 'observed_countries': dict(countries),
               'validated_count': len(validated), 'asia_count': len(preferred),
+              'selected_count': len(selected), 'selected_countries': dict(Counter(r['country'] for r in selected)),
+              'allocation': {'target_per_country': PER_COUNTRY, 'countries': COUNTRY_ORDER, 'fallback': 'US'},
               'asia_list_available': (ROOT / 'ip.txt').exists(), 'elapsed_seconds': round(time.monotonic()-started),
               'measurement_origin': 'GitHub hosted runner' if os.getenv('GITHUB_ACTIONS') else 'local',
-              'validated': validated,
+              'validated': validated, 'selected': selected,
               'note': 'Entrance colo only; not proxy exit country, home-line speed, download speed or AI availability.'}
     (ROOT / 'status.json').write_text(json.dumps(status, indent=2, ensure_ascii=False) + '\n')
-    print(json.dumps({k: v for k, v in status.items() if k != 'validated'}, ensure_ascii=False))
+    print(json.dumps({k: v for k, v in status.items() if k not in ('validated', 'selected')}, ensure_ascii=False))
     summary = os.getenv('GITHUB_STEP_SUMMARY')
     if summary:
         with open(summary, 'a') as handle:
             handle.write(f"## Cloudflare entrance scan\n\n{count} candidates; {len(rows)} reachable; "
-                         f"{len(preferred)} validated JP/KR/SG.\n\nObserved countries: {dict(countries)}\n\n"
-                         'No Asian results: keep previous ip.txt; global.txt is a separate unrestricted list.\n')
-    if not rows or not validated:
+                         f"{len(selected)} selected SG/JP/US.\n\nObserved countries: {dict(countries)}\n\n"
+                         f"Published allocation: {dict(Counter(r['country'] for r in selected))}\n\n"
+                         'Target: 3 per country; missing slots filled by US candidates. Empty lists preserve previous files.\n')
+    if not rows or not selected:
         raise RuntimeError('No validated entrances; existing lists preserved')
 
 
@@ -182,6 +205,7 @@ if __name__ == '__main__':
         previous = json.loads(path.read_text()) if path.exists() else {}
         failure = {'checked_at': datetime.now(timezone.utc).isoformat(), 'state': 'failed',
                    'error': str(error), 'last_asia_update': previous.get('last_asia_update'),
+                   'last_list_update': previous.get('last_list_update'),
                    'asia_list_available': (ROOT / 'ip.txt').exists()}
         path.write_text(json.dumps(failure, indent=2, ensure_ascii=False) + '\n')
         raise
