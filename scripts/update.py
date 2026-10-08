@@ -17,8 +17,10 @@ from collections import Counter
 from datetime import datetime, timezone
 try:
     from .node_probe import check_node, load_profile, prepare_runtime, ranking_key
+    from .exit_lookup import cross_check_exits
 except ImportError:
     from node_probe import check_node, load_profile, prepare_runtime, ranking_key
+    from exit_lookup import cross_check_exits
 
 ROOT = Path(__file__).resolve().parents[1]
 WORK = ROOT / '.work'
@@ -181,6 +183,11 @@ def main():
                 usable.append({**entrance, 'node_passed': True,
                                **{k: report[k] for k in ('success_rate', 'proxy_max_ms', 'proxy_median_ms',
                                                         'download_kib_s', 'sustained_seconds', 'quality')}})
+    exit_summary = cross_check_exits(usable)
+    by_ip = {r['ip']: r['exit_check'] for r in usable}
+    for report in node_reports:
+        if report['ip'] in by_ip:
+            report['exit_check'] = by_ip[report['ip']]
     (WORK / 'node-checks.json').write_text(json.dumps(node_reports, indent=2) + '\n')
     usable.sort(key=ranking_key)
     selected = select_best(usable)
@@ -202,6 +209,7 @@ def main():
               'quality_scored_count': sum(r['quality']['state'] == 'scored' for r in usable),
               'quality_unknown_count': sum(r['quality']['state'] != 'scored' for r in usable),
               'quality_provider': 'IPPure',
+              'exit_cross_check': exit_summary,
               'quality_score_definition': '100 - IPPure fraudScore; higher is lower reported risk',
               'elapsed_seconds': round(time.monotonic()-started),
               'measurement_origin': 'GitHub hosted runner' if os.getenv('GITHUB_ACTIONS') else 'local',
@@ -215,6 +223,8 @@ def main():
             handle.write(f"## Cloudflare entrance scan\n\n{count} candidates; {len(rows)} reachable; "
                          f"{len(usable)}/{len(node_reports)} passed real proxy checks; {len(selected)} selected by quality and proxy performance.\n\nObserved countries: {dict(countries)}\n\n"
                          f"IPPure scored: {status['quality_scored_count']}; unknown: {status['quality_unknown_count']}.\n\n"
+                         f"IP2Location.io: {exit_summary['checked_exit_count']}/{exit_summary['unique_exit_count']} unique exits checked; "
+                         f"{exit_summary['mismatched_node_count']} nodes with metadata differences.\n\n"
                          'No country quotas. Higher quality means lower reported exit risk. Unknown scores use proxy performance; empty results preserve previous files.\n')
     if not selected:
         raise RuntimeError('No nodes passed full proxy checks; existing lists preserved')
