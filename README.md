@@ -8,7 +8,7 @@ GitHub Actions 每天北京时间 09:15、21:15 运行，可在 Actions 手动�
 
 ## 列表
 
-- `ip.txt`：实际数据中心位于 JP/KR/SG 的入口。按 trace 的 colo 和 Cloudflare 官方 locations 判断；没有亚洲合格结果时保留旧文件。首次未筛出结果时不会创建此文件。
+- `ip.txt`：实际数据中心位于 JP/KR/SG 的入口。按 trace 的 colo 和 Cloudflare 官方状态页的城市、国家对应表判断；没有亚洲合格结果时保留旧文件。首次未筛出结果时不会创建此文件。
 - `global.txt`：不限制地区的云端结果，供备用对比。不会自动混入亚洲列表。
 - `status.json`：本次扫描时间、地区分布、合格数量和最后一次亚洲列表更新时间。
 

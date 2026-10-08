@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import random
+import re
 import statistics
 import subprocess
 import time
@@ -38,7 +39,24 @@ def prepare():
     binary = WORK / 'cfdata'
     binary.write_bytes(payload)
     binary.chmod(0o755)
-    locations = json.loads(fetch('https://speed.cloudflare.com/locations'))
+    # The speed-test locations endpoint currently rejects unattended requests.
+    # Official status names include city, country and IATA colo, without auth.
+    components = json.loads(fetch('https://www.cloudflarestatus.com/api/v2/components.json'))['components']
+    codes = {'Japan': 'JP', 'South Korea': 'KR', 'Singapore': 'SG', 'United States': 'US',
+             'Canada': 'CA', 'United Kingdom': 'GB', 'Germany': 'DE', 'Netherlands': 'NL',
+             'France': 'FR', 'Australia': 'AU', 'Hong Kong': 'HK', 'Taiwan': 'TW',
+             'India': 'IN', 'Brazil': 'BR', 'Spain': 'ES', 'Italy': 'IT', 'Sweden': 'SE',
+             'Poland': 'PL', 'Switzerland': 'CH', 'Finland': 'FI', 'Norway': 'NO',
+             'Belgium': 'BE', 'Ireland': 'IE', 'Austria': 'AT', 'Denmark': 'DK'}
+    locations = []
+    for component in components:
+        match = re.fullmatch(r'(.+?),\s*([^,]+?)\s*-\s*\(([A-Z0-9]{3})\)', component['name'])
+        if match:
+            city, country, colo = match.groups()
+            locations.append({'iata': colo, 'cca2': codes.get(country.strip(), 'OTHER'),
+                              'city': city, 'region': country.strip()})
+    if not all(any(r['cca2'] == code for r in locations) for code in REGIONS):
+        raise RuntimeError('Official location metadata is missing target countries')
     (WORK / 'locations.json').write_text(json.dumps(locations))
     networks = [ipaddress.ip_network(line) for line in fetch('https://www.cloudflare.com/ips-v4').decode().split()]
     # Equal samples per published prefix, at most 32 per prefix (~480 total).
@@ -154,4 +172,13 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as error:
+        path = ROOT / 'status.json'
+        previous = json.loads(path.read_text()) if path.exists() else {}
+        failure = {'checked_at': datetime.now(timezone.utc).isoformat(), 'state': 'failed',
+                   'error': str(error), 'last_asia_update': previous.get('last_asia_update'),
+                   'asia_list_available': (ROOT / 'ip.txt').exists()}
+        path.write_text(json.dumps(failure, indent=2, ensure_ascii=False) + '\n')
+        raise
