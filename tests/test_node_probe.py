@@ -1,5 +1,5 @@
 import unittest
-from scripts.node_probe import classify_request, make_config, ranking_key
+from scripts.node_probe import classify_request, extract_transfer_source, make_config, ranking_key
 
 
 class NodeProbeTests(unittest.TestCase):
@@ -26,6 +26,14 @@ class NodeProbeTests(unittest.TestCase):
         fast_entrance = {'max_ms': 1, 'success_rate': 1, 'proxy_max_ms': 2000, 'proxy_median_ms': 1500}
         fast_node = {'max_ms': 200, 'success_rate': 1, 'proxy_max_ms': 500, 'proxy_median_ms': 300}
         self.assertLess(ranking_key(fast_node), ranking_key(fast_entrance))
+
+    def test_transfer_resource_uses_only_fixed_youtube_origin(self):
+        self.assertEqual(extract_transfer_source(b'<script src="/s/player/abcd/player_ias.vflset/en_US/base.js">'),
+                         'https://www.youtube.com/s/player/abcd/player_ias.vflset/en_US/base.js')
+        self.assertIsNone(extract_transfer_source(b'<script src="https://untrusted.example/file.js">'))
+
+    def test_partial_content_is_valid_transfer_status(self):
+        self.assertIsNone(classify_request(0, 206, 1048576, (200, 206), None, b'javascript'))
 
 
 if __name__ == '__main__':

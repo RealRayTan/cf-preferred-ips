@@ -154,7 +154,8 @@ def main():
                         '-nsbspeedtest', '0', '-nsbresultlimit', '1000', '-nsbdelay', '1500',
                         '-out', 'scan', '-outformat', 'csv', '-outfields', 'ip,port,dc,latency',
                         '-outendrow', '0', '-skipgeo', '-nocolor', '-progress=false'],
-                       cwd=WORK, stdout=log, stderr=subprocess.STDOUT, check=True, timeout=600)
+                       cwd=WORK, stdout=log, stderr=subprocess.STDOUT, check=True, timeout=600,
+                       env={k: v for k, v in os.environ.items() if k != 'NODE_PROFILE_JSON'})
     rows = []
     if result_file.exists():
         with result_file.open(encoding='utf-8-sig', newline='') as handle:
@@ -174,6 +175,7 @@ def main():
                 if row['country'] != 'UNKNOWN':
                     validated.append(row)
     validated.sort(key=lambda r: (r['max_ms'], r['median_ms']))
+    print(f'Entrance validation: {len(validated)} passed; starting full proxy checks', flush=True)
     # Exercise actual nodes before either public list can be replaced.
     node_reports = []
     usable = []
@@ -181,6 +183,8 @@ def main():
         checks = pool.map(lambda row: check_node(row['ip'], profile, node_binary, WORK), validated)
         for entrance, report in zip(validated, checks):
             node_reports.append(report)
+            print(f"Node check {len(node_reports)}/{len(validated)}: {report['phase']} "
+                  f"{'passed' if report['passed'] else report.get('failure', 'failed')}", flush=True)
             if report['passed']:
                 usable.append({**entrance, 'node_passed': True,
                                **{k: report[k] for k in ('success_rate', 'proxy_max_ms', 'proxy_median_ms',

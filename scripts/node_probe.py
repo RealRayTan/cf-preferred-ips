@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import socket
 import statistics
 import subprocess
@@ -85,7 +86,8 @@ def classify_request(exit_code, code, size, expected, marker, body):
     if exit_code:
         return {28: 'timeout', 60: 'tls_error', 7: 'connection_error', 35: 'tls_error',
                 56: 'receive_error', 52: 'empty_response'}.get(exit_code, 'transport_error')
-    if code != expected:
+    accepted = expected if isinstance(expected, tuple) else (expected,)
+    if code not in accepted:
         return 'unexpected_http_status'
     lower = body.lower()
     if any(word in lower for word in (b'<title>just a moment', b'attention required!', b'cf-chl-')):
@@ -95,7 +97,13 @@ def classify_request(exit_code, code, size, expected, marker, body):
     return None
 
 
-def proxy_request(port, url, directory, expected=200, marker=None, rate=None):
+def extract_transfer_source(body):
+    text = body.decode('utf-8', errors='replace').replace('\\/', '/')
+    match = re.search(r'(/s/player/[A-Za-z0-9_./-]+/base\.js)', text)
+    return 'https://www.youtube.com'+match.group(1) if match else None
+
+
+def proxy_request(port, url, directory, expected=200, marker=None, rate=None, ranged=False):
     body_file = directory / 'response.bin'
     args = ['curl', '--silent', '--show-error', '--http1.1', '--proxy', f'http://127.0.0.1:{port}',
             '--noproxy', '', '--connect-timeout', '5', '--max-time', '20', '--location',
@@ -104,16 +112,21 @@ def proxy_request(port, url, directory, expected=200, marker=None, rate=None):
             '--output', str(body_file), '--write-out', '%{http_code} %{time_total} %{size_download} %{speed_download}', url]
     if rate:
         args.extend(['--limit-rate', rate])
+    if ranged:
+        args.extend(['--range', f'0-{TRANSFER_BYTES-1}'])
     result = subprocess.run(args, capture_output=True, text=True, timeout=25)
     try:
         code, duration, size, speed = result.stdout.strip().split()
         code, duration, size, speed = int(code), float(duration), int(float(size)), float(speed)
     except ValueError:
         code, duration, size, speed = 0, 0, 0, 0
-    body = body_file.read_bytes()[:1024*1024] if body_file.exists() else b''
+    payload = body_file.read_bytes() if body_file.exists() else b''
+    body = payload[:1024*1024]
     failure = classify_request(result.returncode, code, size, expected, marker, body)
     return {'http_status': code, 'duration_ms': round(duration*1000, 1),
-            'bytes': size, 'speed_kib_s': round(speed/1024, 1), 'failure': failure}
+            'bytes': size, 'speed_kib_s': round(speed/1024, 1), 'failure': failure,
+            'sha256': hashlib.sha256(payload).hexdigest(),
+            'transfer_url': extract_transfer_source(body) if marker == b'youtube' else None}
 
 
 def check_node(ip, profile, binary, work):
@@ -145,10 +158,12 @@ def check_node(ip, profile, binary, work):
                 report['failure'] = 'runtime_start_failed'
                 return report
             timings = []
+            transfer_url = None
             for round_number in range(1, 4):
                 for target, url, expected, marker in TARGETS:
                     report['phase'] = target
                     result = proxy_request(port, url, directory, expected, marker)
+                    transfer_url = result.pop('transfer_url', None) or transfer_url
                     report['checks'].append({'target': target, 'round': round_number, **result})
                     if result['failure']:
                         report['failure'] = result['failure']
@@ -157,19 +172,28 @@ def check_node(ip, profile, binary, work):
                 if round_number == 2:
                     # An uncapped transfer measures speed; a separate paced transfer
                     # keeps a real proxy connection active for several seconds.
+                    if not transfer_url:
+                        report.update({'phase': 'download', 'failure': 'missing_transfer_resource'})
+                        return report
+                    reference = None
                     for phase, rate in (('download', None), ('sustained_transfer', '128K')):
                         report['phase'] = phase
-                        result = proxy_request(port, f'https://speed.cloudflare.com/__down?bytes={TRANSFER_BYTES}', directory, rate=rate)
+                        result = proxy_request(port, transfer_url, directory, expected=(200, 206), rate=rate, ranged=True)
+                        result.pop('transfer_url', None)
                         report['checks'].append({'target': phase, **result})
-                        if result['failure'] or result['bytes'] != TRANSFER_BYTES:
+                        if result['failure'] or result['bytes'] < TRANSFER_BYTES:
                             report['failure'] = result['failure'] or 'incomplete_transfer'
                             return report
                         if phase == 'download':
+                            reference = (result['bytes'], result['sha256'])
                             report['download_kib_s'] = result['speed_kib_s']
                             if result['speed_kib_s'] < 64:
                                 report['failure'] = 'slow_transfer'
                                 return report
                         else:
+                            if reference != (result['bytes'], result['sha256']):
+                                report['failure'] = 'transfer_content_mismatch'
+                                return report
                             report['sustained_seconds'] = round(result['duration_ms']/1000, 1)
                 elif round_number == 1:
                     time.sleep(1)
