@@ -58,7 +58,10 @@ def prepare():
     if not all(any(r['cca2'] == code for r in locations) for code in REGIONS):
         raise RuntimeError('Official location metadata is missing target countries')
     (WORK / 'locations.json').write_text(json.dumps(locations))
-    networks = [ipaddress.ip_network(line) for line in fetch('https://www.cloudflare.com/ips-v4').decode().split()]
+    ranges = json.loads(fetch('https://api.cloudflare.com/client/v4/ips'))
+    if not ranges.get('success'):
+        raise RuntimeError('Official IP ranges API failed')
+    networks = [ipaddress.ip_network(line) for line in ranges['result']['ipv4_cidrs']]
     # Equal samples per published prefix, at most 32 per prefix (~480 total).
     candidates = set()
     for network in networks:
