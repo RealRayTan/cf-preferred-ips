@@ -22,10 +22,8 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 WORK = ROOT / '.work'
-COUNTRY_ORDER = ('SG', 'JP', 'US')
-REGIONS = {'JP', 'SG'}
-PER_COUNTRY = 3
-LIST_SIZE = PER_COUNTRY * len(COUNTRY_ORDER)
+LIST_SIZE = 9
+PROBE_LIMIT = 60
 VERSION = 'v1.8.3'
 
 
@@ -62,8 +60,6 @@ def prepare():
             city, country, colo = match.groups()
             locations.append({'iata': colo, 'cca2': codes.get(country.strip(), 'OTHER'),
                               'city': city, 'region': country.strip()})
-    if not all(any(r['cca2'] == code for r in locations) for code in COUNTRY_ORDER):
-        raise RuntimeError('Official location metadata is missing target countries')
     (WORK / 'locations.json').write_text(json.dumps(locations))
     ranges = json.loads(fetch('https://api.cloudflare.com/client/v4/ips'))
     if not ranges.get('success'):
@@ -118,23 +114,24 @@ def probe(ip):
 
 
 def write_list(name, rows):
-    # Never replace a previous usable list with an empty one.
+    # Keep the source URL stable; unknown quality is never presented as zero risk.
     if rows:
-        (ROOT / name).write_text(''.join(
-            f"{r['ip']}:443#CF-{r['country']}-{r['colo']}-{i+1}\n"
-            for i, r in enumerate(rows[:20])))
+        lines = []
+        for i, row in enumerate(rows[:LIST_SIZE], 1):
+            score = row.get('quality', {}).get('quality_score')
+            label = f'Q{score:g}' if score is not None else 'Q-Unknown'
+            lines.append(f"{row['ip']}:443#CF-{i:02d}-{label}\n")
+        (ROOT / name).write_text(''.join(lines))
 
 
-def select_balanced(rows):
-    pools = {country: [] for country in COUNTRY_ORDER}
-    seen = set()
+def select_best(rows):
+    selected, seen = [], set()
     for row in sorted(rows, key=ranking_key):
-        if row.get('node_passed') and row['country'] in pools and row['ip'] not in seen:
-            pools[row['country']].append(row)
+        if row.get('node_passed') and row['ip'] not in seen:
+            selected.append(row)
             seen.add(row['ip'])
-    selected = [row for country in COUNTRY_ORDER for row in pools[country][:PER_COUNTRY]]
-    remaining = LIST_SIZE - len(selected)
-    selected.extend(pools['US'][PER_COUNTRY:PER_COUNTRY + remaining])
+            if len(selected) == LIST_SIZE:
+                break
     return selected
 
 
@@ -161,19 +158,14 @@ def main():
         with result_file.open(encoding='utf-8-sig', newline='') as handle:
             rows = list(csv.DictReader(handle))
     countries = Counter(location_map.get(row['数据中心'].upper(), 'UNKNOWN') for row in rows)
-    # Keep Asian budgets separate; US needs extra candidates for up to nine fallback slots.
-    chosen = set()
-    for country in COUNTRY_ORDER:
-        budget = 60 if country == 'US' else 20
-        candidates = [r for r in rows if location_map.get(r['数据中心'].upper()) == country][:budget]
-        chosen.update(r['IP地址'] for r in candidates)
+    # One global budget, with no country filter or regional quota.
+    chosen = {r['IP地址'] for r in rows[:PROBE_LIMIT]}
     validated = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
         for row in pool.map(probe, sorted(chosen)):
             if row:
                 row['country'] = location_map.get(row['colo'].upper(), 'UNKNOWN')
-                if row['country'] != 'UNKNOWN':
-                    validated.append(row)
+                validated.append(row)
     validated.sort(key=lambda r: (r['max_ms'], r['median_ms']))
     print(f'Entrance validation: {len(validated)} passed; starting full proxy checks', flush=True)
     # Exercise actual nodes before either public list can be replaced.
@@ -188,39 +180,42 @@ def main():
             if report['passed']:
                 usable.append({**entrance, 'node_passed': True,
                                **{k: report[k] for k in ('success_rate', 'proxy_max_ms', 'proxy_median_ms',
-                                                        'download_kib_s', 'sustained_seconds')}})
+                                                        'download_kib_s', 'sustained_seconds', 'quality')}})
     (WORK / 'node-checks.json').write_text(json.dumps(node_reports, indent=2) + '\n')
     usable.sort(key=ranking_key)
-    preferred = [r for r in usable if r['country'] in REGIONS]
-    selected = select_balanced(usable)
-    write_list('ip.txt', preferred)
+    selected = select_best(usable)
+    write_list('ip.txt', selected)
     write_list('global.txt', selected)
     previous = json.loads((ROOT / 'status.json').read_text()) if (ROOT / 'status.json').exists() else {}
     now = datetime.now(timezone.utc).isoformat()
-    status = {'checked_at': now, 'last_asia_update': now if preferred else previous.get('last_asia_update'),
+    status = {'checked_at': now,
               'last_list_update': now if selected else previous.get('last_list_update'),
               'state': 'updated' if len(selected) == LIST_SIZE else 'partial' if selected else 'no_candidates',
               'scanner': 'CFData-WEB ' + VERSION, 'candidate_count': count,
               'reachable_count': len(rows), 'observed_countries': dict(countries),
-              'validated_count': len(validated), 'asia_count': len(preferred),
+              'validated_count': len(validated),
               'node_checked_count': len(node_reports), 'node_passed_count': len(usable),
               'node_failures': dict(Counter(r['phase']+':'+r.get('failure', 'unknown') for r in node_reports if not r['passed'])),
               'validation_level': 'real_proxy_requests_and_transfer',
               'selected_count': len(selected), 'selected_countries': dict(Counter(r['country'] for r in selected)),
-              'allocation': {'target_per_country': PER_COUNTRY, 'countries': COUNTRY_ORDER, 'fallback': 'US'},
-              'asia_list_available': (ROOT / 'ip.txt').exists(), 'elapsed_seconds': round(time.monotonic()-started),
+              'selection_policy': 'global_quality_then_proxy_performance',
+              'quality_scored_count': sum(r['quality']['state'] == 'scored' for r in usable),
+              'quality_unknown_count': sum(r['quality']['state'] != 'scored' for r in usable),
+              'quality_provider': 'IPPure',
+              'quality_score_definition': '100 - IPPure fraudScore; higher is lower reported risk',
+              'elapsed_seconds': round(time.monotonic()-started),
               'measurement_origin': 'GitHub hosted runner' if os.getenv('GITHUB_ACTIONS') else 'local',
               'validated': validated, 'selected': selected,
-              'note': 'Country is entrance colo, not exit. Proxy website checks and bounded transfers reflect runner conditions; not home-line or AI eligibility.'}
+              'note': 'Entrance countries are diagnostic only. IPPure describes the exit to its own endpoint, not every destination. Unknown quality remains eligible; all checks reflect runner conditions, not home-line or AI eligibility.'}
     (ROOT / 'status.json').write_text(json.dumps(status, indent=2, ensure_ascii=False) + '\n')
     print(json.dumps({k: v for k, v in status.items() if k not in ('validated', 'selected')}, ensure_ascii=False))
     summary = os.getenv('GITHUB_STEP_SUMMARY')
     if summary:
         with open(summary, 'a') as handle:
             handle.write(f"## Cloudflare entrance scan\n\n{count} candidates; {len(rows)} reachable; "
-                         f"{len(usable)}/{len(node_reports)} passed real proxy checks; {len(selected)} selected SG/JP/US.\n\nObserved countries: {dict(countries)}\n\n"
-                         f"Published allocation: {dict(Counter(r['country'] for r in selected))}\n\n"
-                         'Target: 3 per country; missing slots filled by US candidates. Empty lists preserve previous files.\n')
+                         f"{len(usable)}/{len(node_reports)} passed real proxy checks; {len(selected)} selected by quality and proxy performance.\n\nObserved countries: {dict(countries)}\n\n"
+                         f"IPPure scored: {status['quality_scored_count']}; unknown: {status['quality_unknown_count']}.\n\n"
+                         'No country quotas. Higher quality means lower reported exit risk. Unknown scores use proxy performance; empty results preserve previous files.\n')
     if not selected:
         raise RuntimeError('No nodes passed full proxy checks; existing lists preserved')
 
@@ -232,8 +227,7 @@ if __name__ == '__main__':
         path = ROOT / 'status.json'
         previous = json.loads(path.read_text()) if path.exists() else {}
         failure = {**previous, 'checked_at': datetime.now(timezone.utc).isoformat(), 'state': 'failed',
-                   'error': str(error), 'last_asia_update': previous.get('last_asia_update'),
-                   'last_list_update': previous.get('last_list_update'),
-                   'asia_list_available': (ROOT / 'ip.txt').exists()}
+                   'error': str(error),
+                   'last_list_update': previous.get('last_list_update')}
         path.write_text(json.dumps(failure, indent=2, ensure_ascii=False) + '\n')
         raise

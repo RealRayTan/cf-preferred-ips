@@ -1,8 +1,26 @@
 import unittest
-from scripts.node_probe import classify_request, extract_transfer_source, make_config, ranking_key
+from unittest.mock import patch
+from scripts.node_probe import classify_request, extract_transfer_source, make_config, ranking_key, parse_quality, query_quality
 
 
 class NodeProbeTests(unittest.TestCase):
+    def test_quality_score_and_exit_are_validated(self):
+        result = parse_quality({'ip': '8.8.8.8', 'fraudScore': 12, 'countryCode': 'US', 'asn': 15169})
+        self.assertEqual(result['quality_score'], 88)
+        self.assertEqual(result['exit_ip'], '8.8.8.8')
+        for bad in (None, True, -1, 101, '12'):
+            with self.assertRaises(ValueError):
+                parse_quality({'ip': '8.8.8.8', 'fraudScore': bad})
+        with self.assertRaises(ValueError):
+            parse_quality({'ip': '127.0.0.1', 'fraudScore': 0})
+
+    def test_quality_transport_failure_is_unknown_not_low_risk(self):
+        with patch('scripts.node_probe.proxy_request', return_value={'failure': 'timeout'}) as request:
+            result = query_quality(12345, None)
+        self.assertEqual(result['state'], 'unknown')
+        self.assertIsNone(result['quality_score'])
+        self.assertEqual(request.call_args.args[:2], (12345, 'https://my.ippure.com/v1/info'))
+
     def test_no_direct_fallback_and_candidate_replaces_only_server(self):
         profile = {'type': 'vless', 'uuid': 'private-test-id', 'tls': {'enabled': True, 'server_name': 'example.com'},
                    'transport': {'type': 'ws', 'path': '/private-test-path', 'headers': {'Host': 'example.com'}}}

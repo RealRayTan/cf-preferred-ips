@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import io
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -12,6 +13,7 @@ import statistics
 import subprocess
 import tarfile
 import tempfile
+import threading
 import time
 import urllib.request
 
@@ -26,6 +28,45 @@ TARGETS = (
     ('x', 'https://x.com/', 200, b'x.com'),
 )
 TRANSFER_BYTES = 1024 * 1024
+QUALITY_LOCK = threading.Lock()
+QUALITY_LAST_REQUEST = 0.0
+
+
+def parse_quality(payload):
+    """Only publish documented, validated fields; never retain arbitrary API output."""
+    if not isinstance(payload, dict):
+        raise ValueError('Invalid quality response')
+    address = ipaddress.ip_address(payload['ip'])
+    if not address.is_global:
+        raise ValueError('Invalid exit address')
+    risk = payload.get('fraudScore')
+    if isinstance(risk, bool) or not isinstance(risk, (int, float)) or not 0 <= risk <= 100:
+        raise ValueError('Missing or invalid risk score')
+    country = payload.get('countryCode')
+    asn = payload.get('asn')
+    return {'state': 'scored', 'provider': 'IPPure', 'exit_ip': str(address),
+            'exit_country': country if isinstance(country, str) and re.fullmatch('[A-Z]{2}', country) else None,
+            'asn': asn if type(asn) is int and 0 < asn <= 4294967295 else None,
+            'fraud_score': risk, 'quality_score': round(100-risk, 1),
+            'is_residential': payload.get('isResidential') if type(payload.get('isResidential')) is bool else None}
+
+
+def query_quality(port, directory):
+    global QUALITY_LAST_REQUEST
+    unknown = {'state': 'unknown', 'provider': 'IPPure', 'quality_score': None}
+    try:
+        # Space requests across concurrent nodes; never query using a direct fallback.
+        with QUALITY_LOCK:
+            delay = 1-(time.monotonic()-QUALITY_LAST_REQUEST)
+            if delay > 0:
+                time.sleep(delay)
+            QUALITY_LAST_REQUEST = time.monotonic()
+        result = proxy_request(port, 'https://my.ippure.com/v1/info', directory)
+        if result['failure']:
+            return {**unknown, 'failure': result['failure']}
+        return parse_quality(json.loads((directory / 'response.bin').read_text()))
+    except Exception:
+        return {**unknown, 'failure': 'invalid_or_unavailable_response'}
 
 
 def load_profile(work):
@@ -199,6 +240,7 @@ def check_node(ip, profile, binary, work):
                     time.sleep(1)
             report.update({'passed': True, 'phase': 'complete', 'success_rate': 1.0,
                            'proxy_max_ms': max(timings), 'proxy_median_ms': round(statistics.median(timings), 1)})
+            report['quality'] = query_quality(port, directory)
             return report
         except Exception:
             # Keep runtime logs, URLs and auth-bearing configuration out of public diagnostics.
@@ -215,5 +257,8 @@ def check_node(ip, profile, binary, work):
 
 
 def ranking_key(row):
-    return (-row.get('success_rate', 0), row.get('proxy_max_ms', float('inf')),
+    quality = row.get('quality', {})
+    scored = quality.get('state') == 'scored' and isinstance(quality.get('quality_score'), (int, float))
+    return (-row.get('success_rate', 0), 0 if scored else 1,
+            -quality['quality_score'] if scored else 0, row.get('proxy_max_ms', float('inf')),
             row.get('proxy_median_ms', float('inf')), -row.get('download_kib_s', 0), row['max_ms'])

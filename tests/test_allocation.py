@@ -1,43 +1,31 @@
 import unittest
-from collections import Counter
-from scripts.update import select_balanced
+from scripts.update import select_best
 
 
-def candidates(country, count):
-    return [{'ip': f'{country}-{i}', 'country': country, 'max_ms': 100+i, 'median_ms': 80+i,
-             'node_passed': True, 'success_rate': 1, 'proxy_max_ms': 100+i, 'proxy_median_ms': 80+i}
-            for i in range(count)]
+def candidate(ip, country='US', score=None, latency=100):
+    quality = {'state': 'scored' if score is not None else 'unknown', 'quality_score': score}
+    return {'ip': ip, 'country': country, 'max_ms': 100, 'node_passed': True,
+            'success_rate': 1, 'proxy_max_ms': latency, 'proxy_median_ms': latency, 'quality': quality}
 
 
-class AllocationTests(unittest.TestCase):
-    def counts(self, rows):
-        return dict(Counter(row['country'] for row in select_balanced(rows)))
+class SelectionTests(unittest.TestCase):
+    def test_quality_overrides_latency_and_country(self):
+        rows = [candidate('fast', 'US', 10, 1), candidate('quality', 'DE', 90, 500)]
+        self.assertEqual([r['ip'] for r in select_best(rows)], ['quality', 'fast'])
 
-    def test_three_per_country(self):
-        self.assertEqual(self.counts(candidates('SG', 5)+candidates('JP', 5)+candidates('US', 12)),
-                         {'SG': 3, 'JP': 3, 'US': 3})
+    def test_unknown_remains_eligible_after_scored(self):
+        rows = [candidate('unknown', latency=1), candidate('scored', score=0, latency=500)]
+        self.assertEqual([r['ip'] for r in select_best(rows)], ['scored', 'unknown'])
 
-    def test_missing_asian_slots_go_to_us(self):
-        self.assertEqual(self.counts(candidates('SG', 1)+candidates('US', 12)), {'SG': 1, 'US': 8})
+    def test_api_outage_falls_back_to_real_proxy_performance(self):
+        rows = [candidate('slow', latency=500), candidate('fast', latency=100)]
+        self.assertEqual([r['ip'] for r in select_best(rows)], ['fast', 'slow'])
 
-    def test_us_only_fallback(self):
-        self.assertEqual(self.counts(candidates('US', 12)), {'US': 9})
-
-    def test_insufficient_candidates_are_not_duplicated(self):
-        rows = candidates('JP', 2)+candidates('US', 2)
-        result = select_balanced(rows+rows+candidates('KR', 5))
-        self.assertEqual(len(result), 4)
-        self.assertEqual(len({row['ip'] for row in result}), 4)
-
-    def test_quality_order_and_empty_input(self):
-        rows = candidates('US', 12)[::-1]
-        self.assertEqual([r['ip'] for r in select_balanced(rows)], [f'US-{i}' for i in range(9)])
-        self.assertEqual(select_balanced([]), [])
-
-    def test_fast_entrance_without_full_node_pass_is_excluded(self):
-        bad = {'ip': 'bad', 'country': 'US', 'max_ms': 1, 'median_ms': 1}
-        self.assertEqual(self.counts([bad]+candidates('US', 4)), {'US': 4})
-
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_limits_unique_nodes_and_requires_full_pass(self):
+        rows = [candidate(str(i), score=100-i) for i in range(12)]
+        bad = candidate('bad', score=100)
+        bad['node_passed'] = False
+        selected = select_best([bad]+rows+rows)
+        self.assertEqual([r['ip'] for r in selected], [str(i) for i in range(9)])
+        self.assertEqual(select_best([]), [])
+        self.assertEqual(len(select_best(rows[:2]*2)), 2)
