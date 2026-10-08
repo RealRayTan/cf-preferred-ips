@@ -1,7 +1,259 @@
 {
-  "checked_at": "2026-10-08T04:16:29.440845+00:00",
-  "state": "failed",
-  "error": "HTTP Error 403: Forbidden",
+  "checked_at": "2026-10-08T04:18:31.859276+00:00",
   "last_asia_update": null,
-  "asia_list_available": false
+  "state": "no_asian_candidates",
+  "scanner": "CFData-WEB v1.8.3",
+  "candidate_count": 480,
+  "reachable_count": 96,
+  "observed_countries": {
+    "US": 96
+  },
+  "validated_count": 20,
+  "asia_count": 0,
+  "asia_list_available": false,
+  "elapsed_seconds": 53,
+  "measurement_origin": "GitHub hosted runner",
+  "validated": [
+    {
+      "ip": "198.41.216.67",
+      "colo": "SEA",
+      "median_ms": 43.4,
+      "max_ms": 54.8,
+      "samples_ms": [
+        54.8,
+        36.2,
+        43.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.25.122.85",
+      "colo": "SEA",
+      "median_ms": 53.5,
+      "max_ms": 56.0,
+      "samples_ms": [
+        53.2,
+        56.0,
+        53.5
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "198.41.215.163",
+      "colo": "SEA",
+      "median_ms": 52.4,
+      "max_ms": 66.0,
+      "samples_ms": [
+        66.0,
+        52.4,
+        43.1
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "173.245.58.63",
+      "colo": "SEA",
+      "median_ms": 68.1,
+      "max_ms": 69.1,
+      "samples_ms": [
+        64.5,
+        69.1,
+        68.1
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "198.41.205.32",
+      "colo": "SEA",
+      "median_ms": 49.3,
+      "max_ms": 69.7,
+      "samples_ms": [
+        69.7,
+        49.3,
+        43.1
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "172.64.69.193",
+      "colo": "SEA",
+      "median_ms": 65.0,
+      "max_ms": 71.0,
+      "samples_ms": [
+        65.0,
+        71.0,
+        64.7
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "172.67.230.123",
+      "colo": "SEA",
+      "median_ms": 67.3,
+      "max_ms": 71.2,
+      "samples_ms": [
+        71.2,
+        61.8,
+        67.3
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "190.93.246.18",
+      "colo": "SEA",
+      "median_ms": 44.0,
+      "max_ms": 73.5,
+      "samples_ms": [
+        73.5,
+        39.8,
+        44.0
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "173.245.58.157",
+      "colo": "SEA",
+      "median_ms": 71.0,
+      "max_ms": 73.6,
+      "samples_ms": [
+        55.2,
+        71.0,
+        73.6
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "172.67.146.130",
+      "colo": "SEA",
+      "median_ms": 74.8,
+      "max_ms": 75.4,
+      "samples_ms": [
+        74.8,
+        66.2,
+        75.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "172.64.159.105",
+      "colo": "SEA",
+      "median_ms": 67.5,
+      "max_ms": 77.2,
+      "samples_ms": [
+        77.2,
+        67.5,
+        60.8
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "162.159.195.136",
+      "colo": "SEA",
+      "median_ms": 72.5,
+      "max_ms": 77.4,
+      "samples_ms": [
+        77.4,
+        72.5,
+        56.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "188.114.96.86",
+      "colo": "SEA",
+      "median_ms": 67.0,
+      "max_ms": 80.3,
+      "samples_ms": [
+        67.0,
+        80.3,
+        56.1
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "108.162.192.212",
+      "colo": "SEA",
+      "median_ms": 76.7,
+      "max_ms": 80.5,
+      "samples_ms": [
+        76.7,
+        72.3,
+        80.5
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "190.93.245.130",
+      "colo": "SEA",
+      "median_ms": 77.7,
+      "max_ms": 80.7,
+      "samples_ms": [
+        80.7,
+        77.7,
+        57.5
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "188.114.99.167",
+      "colo": "SEA",
+      "median_ms": 75.7,
+      "max_ms": 83.1,
+      "samples_ms": [
+        83.1,
+        75.7,
+        65.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.25.74.117",
+      "colo": "SEA",
+      "median_ms": 76.6,
+      "max_ms": 83.9,
+      "samples_ms": [
+        83.9,
+        76.6,
+        58.3
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "162.159.254.111",
+      "colo": "SEA",
+      "median_ms": 85.6,
+      "max_ms": 89.8,
+      "samples_ms": [
+        85.6,
+        89.8,
+        81.9
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "162.159.235.210",
+      "colo": "SEA",
+      "median_ms": 81.9,
+      "max_ms": 93.6,
+      "samples_ms": [
+        81.9,
+        93.6,
+        77.8
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.24.58.131",
+      "colo": "SEA",
+      "median_ms": 78.3,
+      "max_ms": 100.9,
+      "samples_ms": [
+        77.0,
+        100.9,
+        78.3
+      ],
+      "country": "US"
+    }
+  ],
+  "note": "Entrance colo only; not proxy exit country, home-line speed, download speed or AI availability."
 }
