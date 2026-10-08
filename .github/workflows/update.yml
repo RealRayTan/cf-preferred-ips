@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - name: Check country allocation
+      - name: Check selection and quality scoring
         run: python3 -m unittest discover -s tests -v
       - name: Scan and validate entrances
         env:
