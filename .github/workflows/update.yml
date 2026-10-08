@@ -11,12 +11,14 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - name: Check country allocation
         run: python3 -m unittest discover -s tests -v
       - name: Scan and validate entrances
+        env:
+          NODE_PROFILE_JSON: ${{ secrets.NODE_PROFILE_JSON }}
         run: python3 scripts/update.py
       - name: Save scan diagnostics
         if: always()
@@ -26,6 +28,7 @@ jobs:
           path: |
             .work/scan.csv
             .work/scan.log
+            .work/node-checks.json
             status.json
           retention-days: 7
       - name: Publish lists and latest status

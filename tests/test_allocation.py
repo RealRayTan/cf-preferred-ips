@@ -4,7 +4,8 @@ from scripts.update import select_balanced
 
 
 def candidates(country, count):
-    return [{'ip': f'{country}-{i}', 'country': country, 'max_ms': 100+i, 'median_ms': 80+i}
+    return [{'ip': f'{country}-{i}', 'country': country, 'max_ms': 100+i, 'median_ms': 80+i,
+             'node_passed': True, 'success_rate': 1, 'proxy_max_ms': 100+i, 'proxy_median_ms': 80+i}
             for i in range(count)]
 
 
@@ -32,6 +33,10 @@ class AllocationTests(unittest.TestCase):
         rows = candidates('US', 12)[::-1]
         self.assertEqual([r['ip'] for r in select_balanced(rows)], [f'US-{i}' for i in range(9)])
         self.assertEqual(select_balanced([]), [])
+
+    def test_fast_entrance_without_full_node_pass_is_excluded(self):
+        bad = {'ip': 'bad', 'country': 'US', 'max_ms': 1, 'median_ms': 1}
+        self.assertEqual(self.counts([bad]+candidates('US', 4)), {'US': 4})
 
 
 if __name__ == '__main__':

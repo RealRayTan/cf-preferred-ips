@@ -15,6 +15,10 @@ import time
 import urllib.request
 from collections import Counter
 from datetime import datetime, timezone
+try:
+    from .node_probe import check_node, load_profile, prepare_runtime, ranking_key
+except ImportError:
+    from node_probe import check_node, load_profile, prepare_runtime, ranking_key
 
 ROOT = Path(__file__).resolve().parents[1]
 WORK = ROOT / '.work'
@@ -124,8 +128,8 @@ def write_list(name, rows):
 def select_balanced(rows):
     pools = {country: [] for country in COUNTRY_ORDER}
     seen = set()
-    for row in sorted(rows, key=lambda r: (r['max_ms'], r['median_ms'])):
-        if row['country'] in pools and row['ip'] not in seen:
+    for row in sorted(rows, key=ranking_key):
+        if row.get('node_passed') and row['country'] in pools and row['ip'] not in seen:
             pools[row['country']].append(row)
             seen.add(row['ip'])
     selected = [row for country in COUNTRY_ORDER for row in pools[country][:PER_COUNTRY]]
@@ -136,6 +140,9 @@ def select_balanced(rows):
 
 def main():
     started = time.monotonic()
+    WORK.mkdir(exist_ok=True)
+    profile = load_profile(WORK)
+    node_binary = prepare_runtime(WORK)
     binary, locations, count = prepare()
     location_map = {row['iata'].upper(): row['cca2'].upper() for row in locations}
     result_file = WORK / 'scan.csv'
@@ -167,8 +174,21 @@ def main():
                 if row['country'] != 'UNKNOWN':
                     validated.append(row)
     validated.sort(key=lambda r: (r['max_ms'], r['median_ms']))
-    preferred = [r for r in validated if r['country'] in REGIONS]
-    selected = select_balanced(validated)
+    # Exercise actual nodes before either public list can be replaced.
+    node_reports = []
+    usable = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+        checks = pool.map(lambda row: check_node(row['ip'], profile, node_binary, WORK), validated)
+        for entrance, report in zip(validated, checks):
+            node_reports.append(report)
+            if report['passed']:
+                usable.append({**entrance, 'node_passed': True,
+                               **{k: report[k] for k in ('success_rate', 'proxy_max_ms', 'proxy_median_ms',
+                                                        'download_kib_s', 'sustained_seconds')}})
+    (WORK / 'node-checks.json').write_text(json.dumps(node_reports, indent=2) + '\n')
+    usable.sort(key=ranking_key)
+    preferred = [r for r in usable if r['country'] in REGIONS]
+    selected = select_balanced(usable)
     write_list('ip.txt', preferred)
     write_list('global.txt', selected)
     previous = json.loads((ROOT / 'status.json').read_text()) if (ROOT / 'status.json').exists() else {}
@@ -179,23 +199,26 @@ def main():
               'scanner': 'CFData-WEB ' + VERSION, 'candidate_count': count,
               'reachable_count': len(rows), 'observed_countries': dict(countries),
               'validated_count': len(validated), 'asia_count': len(preferred),
+              'node_checked_count': len(node_reports), 'node_passed_count': len(usable),
+              'node_failures': dict(Counter(r['phase']+':'+r.get('failure', 'unknown') for r in node_reports if not r['passed'])),
+              'validation_level': 'real_proxy_requests_and_transfer',
               'selected_count': len(selected), 'selected_countries': dict(Counter(r['country'] for r in selected)),
               'allocation': {'target_per_country': PER_COUNTRY, 'countries': COUNTRY_ORDER, 'fallback': 'US'},
               'asia_list_available': (ROOT / 'ip.txt').exists(), 'elapsed_seconds': round(time.monotonic()-started),
               'measurement_origin': 'GitHub hosted runner' if os.getenv('GITHUB_ACTIONS') else 'local',
               'validated': validated, 'selected': selected,
-              'note': 'Entrance colo only; not proxy exit country, home-line speed, download speed or AI availability.'}
+              'note': 'Country is entrance colo, not exit. Proxy website checks and bounded transfers reflect runner conditions; not home-line or AI eligibility.'}
     (ROOT / 'status.json').write_text(json.dumps(status, indent=2, ensure_ascii=False) + '\n')
     print(json.dumps({k: v for k, v in status.items() if k not in ('validated', 'selected')}, ensure_ascii=False))
     summary = os.getenv('GITHUB_STEP_SUMMARY')
     if summary:
         with open(summary, 'a') as handle:
             handle.write(f"## Cloudflare entrance scan\n\n{count} candidates; {len(rows)} reachable; "
-                         f"{len(selected)} selected SG/JP/US.\n\nObserved countries: {dict(countries)}\n\n"
+                         f"{len(usable)}/{len(node_reports)} passed real proxy checks; {len(selected)} selected SG/JP/US.\n\nObserved countries: {dict(countries)}\n\n"
                          f"Published allocation: {dict(Counter(r['country'] for r in selected))}\n\n"
                          'Target: 3 per country; missing slots filled by US candidates. Empty lists preserve previous files.\n')
-    if not rows or not selected:
-        raise RuntimeError('No validated entrances; existing lists preserved')
+    if not selected:
+        raise RuntimeError('No nodes passed full proxy checks; existing lists preserved')
 
 
 if __name__ == '__main__':
@@ -204,7 +227,7 @@ if __name__ == '__main__':
     except Exception as error:
         path = ROOT / 'status.json'
         previous = json.loads(path.read_text()) if path.exists() else {}
-        failure = {'checked_at': datetime.now(timezone.utc).isoformat(), 'state': 'failed',
+        failure = {**previous, 'checked_at': datetime.now(timezone.utc).isoformat(), 'state': 'failed',
                    'error': str(error), 'last_asia_update': previous.get('last_asia_update'),
                    'last_list_update': previous.get('last_list_update'),
                    'asia_list_available': (ROOT / 'ip.txt').exists()}
