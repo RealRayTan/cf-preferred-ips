@@ -153,10 +153,11 @@ def main():
         with result_file.open(encoding='utf-8-sig', newline='') as handle:
             rows = list(csv.DictReader(handle))
     countries = Counter(location_map.get(row['数据中心'].upper(), 'UNKNOWN') for row in rows)
-    # Reserve equal revalidation budgets so one country cannot crowd out another.
+    # Keep Asian budgets separate; US needs extra candidates for up to nine fallback slots.
     chosen = set()
     for country in COUNTRY_ORDER:
-        candidates = [r for r in rows if location_map.get(r['数据中心'].upper()) == country][:20]
+        budget = 60 if country == 'US' else 20
+        candidates = [r for r in rows if location_map.get(r['数据中心'].upper()) == country][:budget]
         chosen.update(r['IP地址'] for r in candidates)
     validated = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
