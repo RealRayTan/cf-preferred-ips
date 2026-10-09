@@ -116,13 +116,11 @@ def probe(ip):
 
 
 def write_list(name, rows):
-    # Keep the source URL stable; unknown quality is never presented as zero risk.
+    # Stable slot names let client policies survive changes to IPs and scores.
     if rows:
         lines = []
         for i, row in enumerate(rows[:LIST_SIZE], 1):
-            score = row.get('quality', {}).get('quality_score')
-            label = f'Q{score:g}' if score is not None else 'Q-Unknown'
-            lines.append(f"{row['ip']}:443#CF-{i:02d}-{label}\n")
+            lines.append(f"{row['ip']}:443#CF-{i:02d}\n")
         (ROOT / name).write_text(''.join(lines))
 
 

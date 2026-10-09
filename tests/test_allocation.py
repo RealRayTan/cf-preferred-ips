@@ -1,5 +1,8 @@
 import unittest
-from scripts.update import select_best
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
+from scripts.update import select_best, write_list
 
 
 def candidate(ip, country='US', score=None, latency=100):
@@ -29,3 +32,24 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual([r['ip'] for r in selected], [str(i) for i in range(9)])
         self.assertEqual(select_best([]), [])
         self.assertEqual(len(select_best(rows[:2]*2)), 2)
+
+
+class SubscriptionTests(unittest.TestCase):
+    def test_slot_names_survive_score_and_address_changes(self):
+        with TemporaryDirectory() as directory, patch('scripts.update.ROOT', Path(directory)):
+            path = Path(directory) / 'ip.txt'
+            write_list('ip.txt', [candidate('192.0.2.1', score=90), candidate('192.0.2.2')])
+            before = path.read_text().splitlines()
+            write_list('ip.txt', [candidate('192.0.2.3'), candidate('192.0.2.4', score=10)])
+            after = path.read_text().splitlines()
+            self.assertNotEqual(before, after)
+            self.assertEqual([line.split('#')[1] for line in before], ['CF-01', 'CF-02'])
+            self.assertEqual([line.split('#')[1] for line in after], ['CF-01', 'CF-02'])
+
+    def test_empty_scan_preserves_last_subscription(self):
+        with TemporaryDirectory() as directory, patch('scripts.update.ROOT', Path(directory)):
+            path = Path(directory) / 'ip.txt'
+            write_list('ip.txt', [candidate('192.0.2.1', score=90)])
+            before = path.read_text()
+            write_list('ip.txt', [])
+            self.assertEqual(path.read_text(), before)
