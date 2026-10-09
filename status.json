@@ -1,18 +1,18 @@
 {
-  "checked_at": "2026-10-09T07:29:22.057731+00:00",
-  "last_list_update": "2026-10-09T07:29:22.057731+00:00",
+  "checked_at": "2026-10-09T08:58:34.715879+00:00",
+  "last_list_update": "2026-10-09T08:58:34.715879+00:00",
   "state": "updated",
   "scanner": "CFData-WEB v1.8.3",
   "candidate_count": 489,
-  "reachable_count": 106,
+  "reachable_count": 107,
   "observed_countries": {
-    "US": 106
+    "US": 107
   },
   "validated_count": 60,
   "node_checked_count": 60,
-  "node_passed_count": 48,
+  "node_passed_count": 47,
   "node_failures": {
-    "baseline:tls_error": 12
+    "baseline:tls_error": 13
   },
   "validation_level": "real_proxy_requests_and_transfer",
   "selected_count": 9,
@@ -20,774 +20,774 @@
     "US": 9
   },
   "selection_policy": "global_quality_then_proxy_performance",
-  "quality_scored_count": 48,
+  "quality_scored_count": 47,
   "quality_unknown_count": 0,
   "quality_provider": "IPPure",
   "exit_cross_check": {
     "provider": "IP2Location.io",
-    "unique_exit_count": 11,
-    "request_count": 11,
-    "checked_exit_count": 11,
+    "unique_exit_count": 15,
+    "request_count": 15,
+    "checked_exit_count": 15,
     "unknown_exit_count": 0,
     "mismatched_node_count": 0
   },
   "quality_score_definition": "100 - IPPure fraudScore; higher is lower reported risk",
-  "elapsed_seconds": 267,
+  "elapsed_seconds": 265,
   "measurement_origin": "GitHub hosted runner",
   "validated": [
     {
-      "ip": "198.41.214.106",
-      "colo": "DFW",
-      "median_ms": 49.2,
-      "max_ms": 49.2,
+      "ip": "198.41.214.4",
+      "colo": "IAD",
+      "median_ms": 47.8,
+      "max_ms": 62.5,
       "samples_ms": [
-        45.8,
-        49.2,
-        49.2
+        62.5,
+        47.8,
+        35.4
       ],
       "country": "US"
     },
     {
-      "ip": "104.18.208.18",
-      "colo": "DFW",
-      "median_ms": 46.2,
-      "max_ms": 50.4,
+      "ip": "172.67.121.43",
+      "colo": "IAD",
+      "median_ms": 62.7,
+      "max_ms": 64.5,
       "samples_ms": [
-        46.2,
-        50.4,
-        45.8
+        64.5,
+        54.9,
+        62.7
       ],
       "country": "US"
     },
     {
-      "ip": "104.24.76.0",
-      "colo": "DFW",
-      "median_ms": 46.9,
-      "max_ms": 50.4,
+      "ip": "198.41.201.23",
+      "colo": "IAD",
+      "median_ms": 50.6,
+      "max_ms": 69.7,
       "samples_ms": [
-        46.2,
-        46.9,
-        50.4
+        69.7,
+        50.6,
+        50.1
       ],
       "country": "US"
     },
     {
-      "ip": "188.114.97.33",
-      "colo": "DFW",
-      "median_ms": 51.5,
-      "max_ms": 51.5,
+      "ip": "198.41.209.64",
+      "colo": "IAD",
+      "median_ms": 48.7,
+      "max_ms": 72.4,
       "samples_ms": [
-        47.0,
-        51.5,
-        51.5
+        72.4,
+        48.7,
+        46.6
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.18.248.119",
+      "colo": "IAD",
+      "median_ms": 70.6,
+      "max_ms": 75.1,
+      "samples_ms": [
+        70.6,
+        55.6,
+        75.1
       ],
       "country": "US"
     },
     {
       "ip": "190.93.247.109",
-      "colo": "DFW",
-      "median_ms": 51.2,
-      "max_ms": 52.5,
+      "colo": "IAD",
+      "median_ms": 66.3,
+      "max_ms": 75.3,
       "samples_ms": [
-        51.2,
-        52.5,
-        50.5
+        58.0,
+        75.3,
+        66.3
       ],
       "country": "US"
     },
     {
-      "ip": "104.20.51.253",
-      "colo": "DFW",
-      "median_ms": 52.1,
-      "max_ms": 53.6,
-      "samples_ms": [
-        53.6,
-        51.8,
-        52.1
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.19.186.134",
-      "colo": "DFW",
-      "median_ms": 52.9,
-      "max_ms": 53.6,
-      "samples_ms": [
-        53.6,
-        52.9,
-        50.4
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.24.210.16",
-      "colo": "DFW",
-      "median_ms": 53.2,
-      "max_ms": 53.7,
-      "samples_ms": [
-        49.3,
-        53.7,
-        53.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "198.41.200.35",
-      "colo": "DFW",
-      "median_ms": 49.1,
-      "max_ms": 54.2,
-      "samples_ms": [
-        48.4,
-        49.1,
-        54.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.25.17.234",
-      "colo": "DFW",
-      "median_ms": 50.5,
-      "max_ms": 54.3,
-      "samples_ms": [
-        50.5,
-        54.3,
-        48.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "188.114.98.31",
-      "colo": "DFW",
-      "median_ms": 52.9,
-      "max_ms": 54.3,
-      "samples_ms": [
-        54.3,
-        52.9,
-        44.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.17.43.143",
-      "colo": "DFW",
-      "median_ms": 53.5,
-      "max_ms": 54.5,
-      "samples_ms": [
-        53.5,
-        46.8,
-        54.5
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "188.114.99.109",
-      "colo": "DFW",
-      "median_ms": 47.3,
-      "max_ms": 54.6,
-      "samples_ms": [
-        54.6,
-        47.3,
-        46.9
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "198.41.192.132",
-      "colo": "DFW",
-      "median_ms": 54.0,
-      "max_ms": 54.7,
-      "samples_ms": [
-        54.0,
-        47.9,
-        54.7
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "173.245.58.177",
-      "colo": "DFW",
-      "median_ms": 54.9,
-      "max_ms": 55.3,
-      "samples_ms": [
-        54.9,
-        55.3,
-        51.9
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "190.93.244.39",
-      "colo": "DFW",
-      "median_ms": 55.1,
-      "max_ms": 55.8,
-      "samples_ms": [
-        55.8,
-        55.1,
-        51.5
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.21.222.127",
-      "colo": "DFW",
-      "median_ms": 55.4,
-      "max_ms": 56.4,
-      "samples_ms": [
-        55.4,
-        53.5,
-        56.4
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.21.42.77",
-      "colo": "DFW",
-      "median_ms": 56.0,
-      "max_ms": 56.7,
-      "samples_ms": [
-        52.1,
-        56.7,
-        56.0
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.25.208.232",
-      "colo": "DFW",
-      "median_ms": 54.2,
-      "max_ms": 57.0,
-      "samples_ms": [
-        57.0,
-        49.5,
-        54.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "188.114.97.173",
-      "colo": "DFW",
-      "median_ms": 53.0,
-      "max_ms": 57.1,
-      "samples_ms": [
-        51.3,
-        53.0,
-        57.1
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "188.114.98.208",
-      "colo": "DFW",
-      "median_ms": 54.7,
-      "max_ms": 57.6,
-      "samples_ms": [
-        57.6,
-        49.4,
-        54.7
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "172.64.38.28",
-      "colo": "DFW",
-      "median_ms": 57.4,
-      "max_ms": 58.0,
-      "samples_ms": [
-        56.3,
-        57.4,
-        58.0
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "173.245.49.196",
-      "colo": "DFW",
-      "median_ms": 55.9,
-      "max_ms": 58.2,
-      "samples_ms": [
-        55.0,
-        58.2,
-        55.9
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.18.20.31",
-      "colo": "DFW",
-      "median_ms": 49.4,
-      "max_ms": 58.5,
-      "samples_ms": [
-        49.4,
-        42.2,
-        58.5
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "141.101.123.94",
-      "colo": "DFW",
-      "median_ms": 52.2,
-      "max_ms": 58.5,
-      "samples_ms": [
-        58.5,
-        49.9,
-        52.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "172.67.112.251",
-      "colo": "DFW",
-      "median_ms": 56.2,
-      "max_ms": 58.9,
-      "samples_ms": [
-        56.0,
-        56.2,
-        58.9
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "162.159.32.96",
-      "colo": "DFW",
-      "median_ms": 58.4,
-      "max_ms": 60.2,
-      "samples_ms": [
-        58.4,
-        60.2,
-        41.8
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "188.114.96.105",
-      "colo": "DFW",
-      "median_ms": 58.9,
-      "max_ms": 60.2,
-      "samples_ms": [
-        51.2,
-        58.9,
-        60.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.24.217.65",
-      "colo": "DFW",
-      "median_ms": 51.4,
-      "max_ms": 61.3,
-      "samples_ms": [
-        61.3,
-        51.4,
-        46.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "162.159.128.56",
-      "colo": "DFW",
-      "median_ms": 55.2,
-      "max_ms": 61.3,
-      "samples_ms": [
-        55.2,
-        54.1,
-        61.3
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "198.41.216.90",
-      "colo": "DFW",
-      "median_ms": 53.5,
-      "max_ms": 61.5,
-      "samples_ms": [
-        44.0,
-        61.5,
-        53.5
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.24.12.46",
-      "colo": "DFW",
-      "median_ms": 60.4,
-      "max_ms": 61.9,
-      "samples_ms": [
-        61.9,
-        52.4,
-        60.4
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.25.170.58",
-      "colo": "DFW",
-      "median_ms": 57.4,
-      "max_ms": 62.0,
-      "samples_ms": [
-        57.4,
-        56.1,
-        62.0
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "173.245.59.149",
-      "colo": "DFW",
-      "median_ms": 54.1,
-      "max_ms": 62.2,
-      "samples_ms": [
-        49.9,
-        62.2,
-        54.1
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "108.162.196.240",
-      "colo": "DFW",
-      "median_ms": 54.7,
-      "max_ms": 62.3,
-      "samples_ms": [
-        62.3,
-        42.6,
-        54.7
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.21.109.193",
-      "colo": "DFW",
-      "median_ms": 60.2,
-      "max_ms": 63.0,
-      "samples_ms": [
-        56.6,
-        63.0,
-        60.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "162.159.81.160",
-      "colo": "DFW",
-      "median_ms": 55.0,
-      "max_ms": 63.3,
-      "samples_ms": [
-        63.3,
-        53.5,
-        55.0
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "172.64.189.35",
-      "colo": "DFW",
-      "median_ms": 57.7,
-      "max_ms": 63.9,
-      "samples_ms": [
-        51.3,
-        57.7,
-        63.9
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "173.245.59.44",
-      "colo": "DFW",
-      "median_ms": 59.4,
-      "max_ms": 64.5,
-      "samples_ms": [
-        64.5,
-        52.1,
-        59.4
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.26.14.72",
-      "colo": "DFW",
-      "median_ms": 61.6,
-      "max_ms": 65.3,
-      "samples_ms": [
-        53.4,
-        61.6,
-        65.3
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "108.162.194.236",
-      "colo": "DFW",
-      "median_ms": 57.3,
-      "max_ms": 65.9,
-      "samples_ms": [
-        65.9,
-        52.2,
-        57.3
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.25.66.157",
-      "colo": "DFW",
-      "median_ms": 55.8,
-      "max_ms": 66.0,
-      "samples_ms": [
-        55.8,
-        66.0,
-        51.9
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "141.101.120.244",
-      "colo": "DFW",
-      "median_ms": 59.1,
-      "max_ms": 67.2,
-      "samples_ms": [
-        52.6,
-        59.1,
-        67.2
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "162.159.148.81",
-      "colo": "DFW",
-      "median_ms": 57.9,
-      "max_ms": 67.8,
-      "samples_ms": [
-        67.8,
-        57.9,
-        47.0
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.25.41.167",
-      "colo": "DFW",
-      "median_ms": 59.9,
-      "max_ms": 67.8,
-      "samples_ms": [
-        45.6,
-        59.9,
-        67.8
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.16.144.178",
-      "colo": "DFW",
-      "median_ms": 62.1,
-      "max_ms": 67.8,
-      "samples_ms": [
-        67.8,
-        62.1,
-        51.0
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "162.159.192.96",
-      "colo": "DFW",
-      "median_ms": 61.9,
-      "max_ms": 68.4,
-      "samples_ms": [
-        61.9,
-        57.0,
-        68.4
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.17.134.10",
-      "colo": "DFW",
-      "median_ms": 62.3,
-      "max_ms": 68.9,
-      "samples_ms": [
-        68.9,
-        59.1,
-        62.3
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.19.194.187",
-      "colo": "DFW",
-      "median_ms": 59.2,
-      "max_ms": 69.5,
-      "samples_ms": [
-        69.5,
-        59.2,
-        53.8
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "172.67.173.171",
-      "colo": "DFW",
-      "median_ms": 59.7,
-      "max_ms": 69.6,
-      "samples_ms": [
-        59.7,
-        52.2,
-        69.6
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "108.162.193.79",
-      "colo": "DFW",
-      "median_ms": 59.1,
-      "max_ms": 70.9,
-      "samples_ms": [
-        52.1,
-        70.9,
-        59.1
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.18.126.252",
-      "colo": "DFW",
-      "median_ms": 61.7,
-      "max_ms": 72.7,
-      "samples_ms": [
-        72.7,
-        58.9,
-        61.7
-      ],
-      "country": "US"
-    },
-    {
-      "ip": "104.19.53.22",
-      "colo": "DFW",
-      "median_ms": 59.9,
+      "ip": "198.41.207.12",
+      "colo": "IAD",
+      "median_ms": 50.2,
       "max_ms": 75.5,
       "samples_ms": [
         75.5,
-        56.8,
-        59.9
+        50.2,
+        45.4
       ],
       "country": "US"
     },
     {
-      "ip": "104.18.166.11",
-      "colo": "DFW",
-      "median_ms": 58.2,
-      "max_ms": 75.8,
+      "ip": "190.93.246.249",
+      "colo": "IAD",
+      "median_ms": 65.8,
+      "max_ms": 76.7,
       "samples_ms": [
-        75.8,
-        58.2,
-        51.1
+        76.7,
+        62.9,
+        65.8
       ],
       "country": "US"
     },
     {
-      "ip": "104.27.98.91",
-      "colo": "DFW",
-      "median_ms": 63.6,
+      "ip": "162.159.84.220",
+      "colo": "IAD",
+      "median_ms": 75.9,
+      "max_ms": 76.9,
+      "samples_ms": [
+        76.9,
+        75.9,
+        70.1
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.27.65.56",
+      "colo": "IAD",
+      "median_ms": 77.3,
       "max_ms": 77.7,
       "samples_ms": [
-        49.5,
+        69.5,
         77.7,
-        63.6
+        77.3
       ],
       "country": "US"
     },
     {
-      "ip": "104.16.123.85",
-      "colo": "DFW",
-      "median_ms": 64.2,
-      "max_ms": 78.1,
+      "ip": "104.24.225.118",
+      "colo": "IAD",
+      "median_ms": 69.0,
+      "max_ms": 79.2,
       "samples_ms": [
-        78.1,
-        64.2,
-        55.8
+        60.5,
+        69.0,
+        79.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "190.93.247.16",
+      "colo": "IAD",
+      "median_ms": 78.3,
+      "max_ms": 79.2,
+      "samples_ms": [
+        78.3,
+        56.7,
+        79.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "188.114.99.139",
+      "colo": "IAD",
+      "median_ms": 79.8,
+      "max_ms": 80.2,
+      "samples_ms": [
+        79.8,
+        70.1,
+        80.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "141.101.122.184",
+      "colo": "IAD",
+      "median_ms": 66.7,
+      "max_ms": 80.4,
+      "samples_ms": [
+        66.7,
+        65.6,
+        80.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.25.244.151",
+      "colo": "IAD",
+      "median_ms": 79.6,
+      "max_ms": 80.4,
+      "samples_ms": [
+        59.5,
+        80.4,
+        79.6
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "173.245.59.237",
+      "colo": "IAD",
+      "median_ms": 75.4,
+      "max_ms": 80.6,
+      "samples_ms": [
+        80.6,
+        59.8,
+        75.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "162.159.137.213",
+      "colo": "IAD",
+      "median_ms": 77.4,
+      "max_ms": 81.4,
+      "samples_ms": [
+        81.4,
+        70.8,
+        77.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "108.162.196.239",
+      "colo": "IAD",
+      "median_ms": 69.7,
+      "max_ms": 81.9,
+      "samples_ms": [
+        81.9,
+        69.7,
+        69.7
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.21.26.164",
+      "colo": "IAD",
+      "median_ms": 64.2,
+      "max_ms": 82.0,
+      "samples_ms": [
+        55.2,
+        82.0,
+        64.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.19.89.15",
+      "colo": "IAD",
+      "median_ms": 76.3,
+      "max_ms": 83.4,
+      "samples_ms": [
+        76.3,
+        69.9,
+        83.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "108.162.195.146",
+      "colo": "IAD",
+      "median_ms": 72.1,
+      "max_ms": 83.6,
+      "samples_ms": [
+        72.1,
+        71.1,
+        83.6
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "108.162.193.59",
+      "colo": "IAD",
+      "median_ms": 75.2,
+      "max_ms": 83.8,
+      "samples_ms": [
+        73.3,
+        75.2,
+        83.8
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.18.92.156",
+      "colo": "IAD",
+      "median_ms": 77.1,
+      "max_ms": 83.9,
+      "samples_ms": [
+        83.9,
+        77.1,
+        61.6
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.19.204.248",
+      "colo": "IAD",
+      "median_ms": 79.3,
+      "max_ms": 83.9,
+      "samples_ms": [
+        71.5,
+        83.9,
+        79.3
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "162.159.10.145",
+      "colo": "IAD",
+      "median_ms": 84.6,
+      "max_ms": 85.3,
+      "samples_ms": [
+        70.9,
+        84.6,
+        85.3
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "173.245.58.93",
+      "colo": "IAD",
+      "median_ms": 77.3,
+      "max_ms": 85.8,
+      "samples_ms": [
+        77.3,
+        85.8,
+        63.0
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "188.114.98.1",
+      "colo": "IAD",
+      "median_ms": 82.5,
+      "max_ms": 87.3,
+      "samples_ms": [
+        82.5,
+        77.0,
+        87.3
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "172.66.194.75",
+      "colo": "IAD",
+      "median_ms": 77.4,
+      "max_ms": 87.5,
+      "samples_ms": [
+        87.5,
+        74.6,
+        77.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "190.93.245.155",
+      "colo": "IAD",
+      "median_ms": 81.9,
+      "max_ms": 88.7,
+      "samples_ms": [
+        81.9,
+        80.1,
+        88.7
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "172.67.174.179",
+      "colo": "IAD",
+      "median_ms": 74.8,
+      "max_ms": 88.9,
+      "samples_ms": [
+        88.9,
+        58.8,
+        74.8
       ],
       "country": "US"
     },
     {
       "ip": "104.27.61.212",
-      "colo": "DFW",
-      "median_ms": 58.9,
-      "max_ms": 78.8,
+      "colo": "IAD",
+      "median_ms": 80.7,
+      "max_ms": 90.0,
       "samples_ms": [
-        58.9,
-        78.8,
-        54.2
+        90.0,
+        77.4,
+        80.7
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.24.185.145",
+      "colo": "IAD",
+      "median_ms": 79.9,
+      "max_ms": 90.1,
+      "samples_ms": [
+        54.9,
+        90.1,
+        79.9
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "188.114.96.36",
+      "colo": "IAD",
+      "median_ms": 77.9,
+      "max_ms": 90.3,
+      "samples_ms": [
+        90.3,
+        77.9,
+        54.1
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.25.129.174",
+      "colo": "IAD",
+      "median_ms": 77.9,
+      "max_ms": 90.8,
+      "samples_ms": [
+        90.8,
+        56.9,
+        77.9
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.27.16.25",
+      "colo": "IAD",
+      "median_ms": 84.5,
+      "max_ms": 91.0,
+      "samples_ms": [
+        84.5,
+        82.4,
+        91.0
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "172.64.147.205",
+      "colo": "IAD",
+      "median_ms": 76.9,
+      "max_ms": 92.2,
+      "samples_ms": [
+        57.9,
+        76.9,
+        92.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.17.63.188",
+      "colo": "IAD",
+      "median_ms": 80.4,
+      "max_ms": 92.5,
+      "samples_ms": [
+        55.4,
+        80.4,
+        92.5
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "173.245.59.77",
+      "colo": "IAD",
+      "median_ms": 90.8,
+      "max_ms": 93.6,
+      "samples_ms": [
+        90.8,
+        93.6,
+        79.1
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "188.114.97.30",
+      "colo": "IAD",
+      "median_ms": 83.4,
+      "max_ms": 94.0,
+      "samples_ms": [
+        83.4,
+        66.4,
+        94.0
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "103.31.4.41",
+      "colo": "IAD",
+      "median_ms": 91.2,
+      "max_ms": 94.2,
+      "samples_ms": [
+        91.2,
+        94.2,
+        66.3
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.27.109.81",
+      "colo": "IAD",
+      "median_ms": 88.2,
+      "max_ms": 94.3,
+      "samples_ms": [
+        94.3,
+        80.4,
+        88.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.19.20.231",
+      "colo": "IAD",
+      "median_ms": 86.4,
+      "max_ms": 94.5,
+      "samples_ms": [
+        94.5,
+        60.4,
+        86.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "172.66.170.240",
+      "colo": "IAD",
+      "median_ms": 85.5,
+      "max_ms": 94.6,
+      "samples_ms": [
+        85.5,
+        94.6,
+        59.6
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "141.101.121.204",
+      "colo": "IAD",
+      "median_ms": 92.2,
+      "max_ms": 95.0,
+      "samples_ms": [
+        75.8,
+        92.2,
+        95.0
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "198.41.197.45",
+      "colo": "IAD",
+      "median_ms": 91.4,
+      "max_ms": 95.1,
+      "samples_ms": [
+        95.1,
+        91.4,
+        48.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "198.41.193.206",
+      "colo": "IAD",
+      "median_ms": 77.4,
+      "max_ms": 95.2,
+      "samples_ms": [
+        95.2,
+        77.4,
+        72.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "188.114.99.91",
+      "colo": "IAD",
+      "median_ms": 91.3,
+      "max_ms": 95.3,
+      "samples_ms": [
+        84.2,
+        95.3,
+        91.3
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "173.245.49.73",
+      "colo": "IAD",
+      "median_ms": 82.6,
+      "max_ms": 97.7,
+      "samples_ms": [
+        82.6,
+        75.7,
+        97.7
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.19.194.187",
+      "colo": "IAD",
+      "median_ms": 84.9,
+      "max_ms": 98.2,
+      "samples_ms": [
+        84.9,
+        82.3,
+        98.2
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "190.93.244.36",
+      "colo": "IAD",
+      "median_ms": 84.9,
+      "max_ms": 98.3,
+      "samples_ms": [
+        98.3,
+        84.9,
+        59.1
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "190.93.244.236",
+      "colo": "IAD",
+      "median_ms": 71.9,
+      "max_ms": 98.8,
+      "samples_ms": [
+        71.9,
+        98.8,
+        67.1
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.17.70.40",
+      "colo": "IAD",
+      "median_ms": 80.4,
+      "max_ms": 101.5,
+      "samples_ms": [
+        101.5,
+        71.6,
+        80.4
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "190.93.246.77",
+      "colo": "IAD",
+      "median_ms": 78.9,
+      "max_ms": 101.8,
+      "samples_ms": [
+        101.8,
+        78.9,
+        77.5
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "172.64.231.35",
+      "colo": "IAD",
+      "median_ms": 92.0,
+      "max_ms": 104.0,
+      "samples_ms": [
+        92.0,
+        104.0,
+        91.0
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "188.114.97.243",
+      "colo": "IAD",
+      "median_ms": 78.9,
+      "max_ms": 104.9,
+      "samples_ms": [
+        76.8,
+        78.9,
+        104.9
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "104.20.37.43",
+      "colo": "IAD",
+      "median_ms": 95.5,
+      "max_ms": 105.8,
+      "samples_ms": [
+        105.8,
+        88.6,
+        95.5
+      ],
+      "country": "US"
+    },
+    {
+      "ip": "190.93.245.58",
+      "colo": "IAD",
+      "median_ms": 100.7,
+      "max_ms": 106.2,
+      "samples_ms": [
+        106.2,
+        87.6,
+        100.7
       ],
       "country": "US"
     },
     {
       "ip": "104.16.209.142",
-      "colo": "DFW",
-      "median_ms": 66.6,
-      "max_ms": 82.2,
+      "colo": "IAD",
+      "median_ms": 89.2,
+      "max_ms": 106.4,
       "samples_ms": [
-        82.2,
-        66.6,
-        59.4
+        89.2,
+        106.4,
+        72.2
       ],
       "country": "US"
     },
     {
-      "ip": "104.17.213.86",
-      "colo": "DFW",
-      "median_ms": 58.4,
-      "max_ms": 86.4,
+      "ip": "104.21.99.245",
+      "colo": "IAD",
+      "median_ms": 93.4,
+      "max_ms": 107.4,
       "samples_ms": [
-        86.4,
-        58.4,
-        56.8
+        107.4,
+        93.4,
+        73.7
       ],
       "country": "US"
     },
     {
-      "ip": "190.93.245.23",
-      "colo": "DFW",
-      "median_ms": 53.3,
-      "max_ms": 148.1,
+      "ip": "162.159.148.167",
+      "colo": "IAD",
+      "median_ms": 94.6,
+      "max_ms": 107.6,
       "samples_ms": [
-        53.3,
-        148.1,
-        51.0
+        107.6,
+        94.6,
+        73.4
       ],
       "country": "US"
     }
   ],
   "selected": [
     {
-      "ip": "104.17.213.86",
-      "colo": "DFW",
-      "median_ms": 58.4,
-      "max_ms": 86.4,
+      "ip": "104.17.70.40",
+      "colo": "IAD",
+      "median_ms": 80.4,
+      "max_ms": 101.5,
       "samples_ms": [
-        86.4,
-        58.4,
-        56.8
+        101.5,
+        71.6,
+        80.4
       ],
       "country": "US",
       "node_passed": true,
       "success_rate": 1.0,
-      "proxy_max_ms": 462.4,
-      "proxy_median_ms": 320.0,
-      "download_kib_s": 5432.6,
+      "proxy_max_ms": 615.7,
+      "proxy_median_ms": 238.1,
+      "download_kib_s": 8779.2,
       "sustained_seconds": 7.4,
       "quality": {
         "state": "scored",
         "provider": "IPPure",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.212",
         "exit_country": "US",
         "asn": 13335,
-        "fraud_score": 32,
-        "quality_score": 68,
+        "fraud_score": 23,
+        "quality_score": 77,
         "is_residential": false
       },
       "exit_check": {
         "state": "checked",
         "provider": "IP2Location.io",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.212",
         "exit_country": "US",
         "asn": 13335,
         "is_public_proxy": false,
@@ -800,36 +800,78 @@
       }
     },
     {
-      "ip": "104.19.194.187",
-      "colo": "DFW",
-      "median_ms": 59.2,
-      "max_ms": 69.5,
+      "ip": "141.101.122.184",
+      "colo": "IAD",
+      "median_ms": 66.7,
+      "max_ms": 80.4,
+      "samples_ms": [
+        66.7,
+        65.6,
+        80.4
+      ],
+      "country": "US",
+      "node_passed": true,
+      "success_rate": 1.0,
+      "proxy_max_ms": 782.5,
+      "proxy_median_ms": 250.0,
+      "download_kib_s": 9616.9,
+      "sustained_seconds": 7.4,
+      "quality": {
+        "state": "scored",
+        "provider": "IPPure",
+        "exit_ip": "104.28.153.240",
+        "exit_country": "US",
+        "asn": 13335,
+        "fraud_score": 24,
+        "quality_score": 76,
+        "is_residential": false
+      },
+      "exit_check": {
+        "state": "checked",
+        "provider": "IP2Location.io",
+        "exit_ip": "104.28.153.240",
+        "exit_country": "US",
+        "asn": 13335,
+        "is_public_proxy": false,
+        "compared_fields": [
+          "exit_country",
+          "asn"
+        ],
+        "mismatched_fields": [],
+        "consistent": true
+      }
+    },
+    {
+      "ip": "104.27.65.56",
+      "colo": "IAD",
+      "median_ms": 77.3,
+      "max_ms": 77.7,
       "samples_ms": [
         69.5,
-        59.2,
-        53.8
+        77.7,
+        77.3
       ],
       "country": "US",
       "node_passed": true,
       "success_rate": 1.0,
-      "proxy_max_ms": 465.3,
-      "proxy_median_ms": 291.5,
-      "download_kib_s": 6194.9,
+      "proxy_max_ms": 600.3,
+      "proxy_median_ms": 221.4,
+      "download_kib_s": 10041.0,
       "sustained_seconds": 7.4,
       "quality": {
         "state": "scored",
         "provider": "IPPure",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
-        "fraud_score": 32,
-        "quality_score": 68,
+        "fraud_score": 29,
+        "quality_score": 71,
         "is_residential": false
       },
       "exit_check": {
         "state": "checked",
         "provider": "IP2Location.io",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
         "is_public_proxy": false,
@@ -842,36 +884,36 @@
       }
     },
     {
-      "ip": "104.24.217.65",
-      "colo": "DFW",
-      "median_ms": 51.4,
-      "max_ms": 61.3,
+      "ip": "162.159.84.220",
+      "colo": "IAD",
+      "median_ms": 75.9,
+      "max_ms": 76.9,
       "samples_ms": [
-        61.3,
-        51.4,
-        46.2
+        76.9,
+        75.9,
+        70.1
       ],
       "country": "US",
       "node_passed": true,
       "success_rate": 1.0,
-      "proxy_max_ms": 471.4,
-      "proxy_median_ms": 325.7,
-      "download_kib_s": 5111.7,
-      "sustained_seconds": 7.4,
+      "proxy_max_ms": 602.1,
+      "proxy_median_ms": 269.9,
+      "download_kib_s": 9377.3,
+      "sustained_seconds": 7.7,
       "quality": {
         "state": "scored",
         "provider": "IPPure",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
-        "fraud_score": 32,
-        "quality_score": 68,
+        "fraud_score": 29,
+        "quality_score": 71,
         "is_residential": false
       },
       "exit_check": {
         "state": "checked",
         "provider": "IP2Location.io",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
         "is_public_proxy": false,
@@ -884,36 +926,36 @@
       }
     },
     {
-      "ip": "104.25.170.58",
-      "colo": "DFW",
-      "median_ms": 57.4,
-      "max_ms": 62.0,
+      "ip": "162.159.137.213",
+      "colo": "IAD",
+      "median_ms": 77.4,
+      "max_ms": 81.4,
       "samples_ms": [
-        57.4,
-        56.1,
-        62.0
+        81.4,
+        70.8,
+        77.4
       ],
       "country": "US",
       "node_passed": true,
       "success_rate": 1.0,
-      "proxy_max_ms": 479.2,
-      "proxy_median_ms": 311.9,
-      "download_kib_s": 6152.7,
+      "proxy_max_ms": 610.6,
+      "proxy_median_ms": 249.4,
+      "download_kib_s": 8771.9,
       "sustained_seconds": 7.4,
       "quality": {
         "state": "scored",
         "provider": "IPPure",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
-        "fraud_score": 32,
-        "quality_score": 68,
+        "fraud_score": 29,
+        "quality_score": 71,
         "is_residential": false
       },
       "exit_check": {
         "state": "checked",
         "provider": "IP2Location.io",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
         "is_public_proxy": false,
@@ -926,36 +968,36 @@
       }
     },
     {
-      "ip": "190.93.247.109",
-      "colo": "DFW",
-      "median_ms": 51.2,
-      "max_ms": 52.5,
+      "ip": "104.24.185.145",
+      "colo": "IAD",
+      "median_ms": 79.9,
+      "max_ms": 90.1,
       "samples_ms": [
-        51.2,
-        52.5,
-        50.5
+        54.9,
+        90.1,
+        79.9
       ],
       "country": "US",
       "node_passed": true,
       "success_rate": 1.0,
-      "proxy_max_ms": 494.2,
-      "proxy_median_ms": 326.3,
-      "download_kib_s": 5562.6,
-      "sustained_seconds": 7.4,
+      "proxy_max_ms": 621.7,
+      "proxy_median_ms": 229.9,
+      "download_kib_s": 9208.9,
+      "sustained_seconds": 7.5,
       "quality": {
         "state": "scored",
         "provider": "IPPure",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
-        "fraud_score": 32,
-        "quality_score": 68,
+        "fraud_score": 29,
+        "quality_score": 71,
         "is_residential": false
       },
       "exit_check": {
         "state": "checked",
         "provider": "IP2Location.io",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
         "is_public_proxy": false,
@@ -968,36 +1010,36 @@
       }
     },
     {
-      "ip": "104.27.61.212",
-      "colo": "DFW",
-      "median_ms": 58.9,
-      "max_ms": 78.8,
+      "ip": "188.114.99.139",
+      "colo": "IAD",
+      "median_ms": 79.8,
+      "max_ms": 80.2,
       "samples_ms": [
-        58.9,
-        78.8,
-        54.2
+        79.8,
+        70.1,
+        80.2
       ],
       "country": "US",
       "node_passed": true,
       "success_rate": 1.0,
-      "proxy_max_ms": 505.3,
-      "proxy_median_ms": 289.6,
-      "download_kib_s": 5541.7,
+      "proxy_max_ms": 639.1,
+      "proxy_median_ms": 240.7,
+      "download_kib_s": 8694.6,
       "sustained_seconds": 7.4,
       "quality": {
         "state": "scored",
         "provider": "IPPure",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
-        "fraud_score": 32,
-        "quality_score": 68,
+        "fraud_score": 29,
+        "quality_score": 71,
         "is_residential": false
       },
       "exit_check": {
         "state": "checked",
         "provider": "IP2Location.io",
-        "exit_ip": "104.28.167.95",
+        "exit_ip": "104.28.153.222",
         "exit_country": "US",
         "asn": 13335,
         "is_public_proxy": false,
@@ -1010,36 +1052,36 @@
       }
     },
     {
-      "ip": "104.16.209.142",
-      "colo": "DFW",
-      "median_ms": 66.6,
-      "max_ms": 82.2,
+      "ip": "103.31.4.41",
+      "colo": "IAD",
+      "median_ms": 91.2,
+      "max_ms": 94.2,
       "samples_ms": [
-        82.2,
-        66.6,
-        59.4
+        91.2,
+        94.2,
+        66.3
       ],
       "country": "US",
       "node_passed": true,
       "success_rate": 1.0,
-      "proxy_max_ms": 463.0,
-      "proxy_median_ms": 304.5,
-      "download_kib_s": 4866.5,
-      "sustained_seconds": 7.3,
+      "proxy_max_ms": 584.3,
+      "proxy_median_ms": 244.1,
+      "download_kib_s": 8841.4,
+      "sustained_seconds": 7.4,
       "quality": {
         "state": "scored",
         "provider": "IPPure",
-        "exit_ip": "104.28.159.170",
+        "exit_ip": "104.28.157.170",
         "exit_country": "US",
         "asn": 13335,
-        "fraud_score": 39,
-        "quality_score": 61,
+        "fraud_score": 31,
+        "quality_score": 69,
         "is_residential": false
       },
       "exit_check": {
         "state": "checked",
         "provider": "IP2Location.io",
-        "exit_ip": "104.28.159.170",
+        "exit_ip": "104.28.157.170",
         "exit_country": "US",
         "asn": 13335,
         "is_public_proxy": false,
@@ -1052,78 +1094,36 @@
       }
     },
     {
-      "ip": "104.24.12.46",
-      "colo": "DFW",
-      "median_ms": 60.4,
-      "max_ms": 61.9,
+      "ip": "188.114.98.1",
+      "colo": "IAD",
+      "median_ms": 82.5,
+      "max_ms": 87.3,
       "samples_ms": [
-        61.9,
-        52.4,
-        60.4
+        82.5,
+        77.0,
+        87.3
       ],
       "country": "US",
       "node_passed": true,
       "success_rate": 1.0,
-      "proxy_max_ms": 466.2,
-      "proxy_median_ms": 294.8,
-      "download_kib_s": 6166.3,
-      "sustained_seconds": 7.4,
+      "proxy_max_ms": 623.4,
+      "proxy_median_ms": 234.7,
+      "download_kib_s": 9327.7,
+      "sustained_seconds": 7.6,
       "quality": {
         "state": "scored",
         "provider": "IPPure",
-        "exit_ip": "104.28.157.221",
+        "exit_ip": "104.28.157.170",
         "exit_country": "US",
         "asn": 13335,
-        "fraud_score": 39,
-        "quality_score": 61,
+        "fraud_score": 31,
+        "quality_score": 69,
         "is_residential": false
       },
       "exit_check": {
         "state": "checked",
         "provider": "IP2Location.io",
-        "exit_ip": "104.28.157.221",
-        "exit_country": "US",
-        "asn": 13335,
-        "is_public_proxy": false,
-        "compared_fields": [
-          "exit_country",
-          "asn"
-        ],
-        "mismatched_fields": [],
-        "consistent": true
-      }
-    },
-    {
-      "ip": "190.93.245.23",
-      "colo": "DFW",
-      "median_ms": 53.3,
-      "max_ms": 148.1,
-      "samples_ms": [
-        53.3,
-        148.1,
-        51.0
-      ],
-      "country": "US",
-      "node_passed": true,
-      "success_rate": 1.0,
-      "proxy_max_ms": 469.5,
-      "proxy_median_ms": 317.9,
-      "download_kib_s": 6325.4,
-      "sustained_seconds": 7.4,
-      "quality": {
-        "state": "scored",
-        "provider": "IPPure",
-        "exit_ip": "104.28.157.221",
-        "exit_country": "US",
-        "asn": 13335,
-        "fraud_score": 39,
-        "quality_score": 61,
-        "is_residential": false
-      },
-      "exit_check": {
-        "state": "checked",
-        "provider": "IP2Location.io",
-        "exit_ip": "104.28.157.221",
+        "exit_ip": "104.28.157.170",
         "exit_country": "US",
         "asn": 13335,
         "is_public_proxy": false,
