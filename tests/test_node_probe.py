@@ -1,9 +1,46 @@
 import unittest
 from unittest.mock import patch
-from scripts.node_probe import classify_request, extract_transfer_source, make_config, ranking_key, parse_quality, query_quality
+from scripts.node_probe import classify_request, extract_transfer_source, make_config, ranking_key, parse_quality, query_quality, classify_gemini, query_gemini
+import tempfile
+from pathlib import Path
 
 
 class NodeProbeTests(unittest.TestCase):
+    def test_gemini_200_and_unrecognized_markup_do_not_prove_access(self):
+        result = {'http_status': 200, 'failure': None}
+        for body in (b'Gemini login', b'Gemini 45631641,null,false', b'45631641,null,true'):
+            self.assertEqual(classify_gemini(result, body)['state'], 'unknown')
+        passed = classify_gemini(result, b'Gemini 45631641,null,true ,2,1,200,"USA"')
+        self.assertEqual(passed['state'], 'passed')
+        self.assertEqual(passed['observed_region'], 'USA')
+
+    def test_gemini_region_notice_overrides_positive_marker(self):
+        result = classify_gemini({'http_status': 200, 'failure': None},
+                                b"Gemini isn't currently supported in your country 45631641,null,true")
+        self.assertEqual(result['state'], 'region_rejected')
+        self.assertNotIn('observed_region', result)
+
+    def test_gemini_transport_failure_and_challenge_are_distinct(self):
+        for failure, state in [('timeout', 'network_failed'), ('challenge_page', 'unknown'),
+                               ('unexpected_http_status', 'unknown')]:
+            self.assertEqual(classify_gemini({'failure': failure}, b'')['state'], state)
+
+    def test_gemini_probe_uses_the_authenticated_node_proxy(self):
+        with tempfile.TemporaryDirectory() as folder:
+            directory = Path(folder)
+            (directory / 'response.bin').write_bytes(b'Gemini 45631641,null,true')
+            with patch('scripts.node_probe.proxy_request', return_value={'http_status': 200, 'failure': None}) as request:
+                self.assertEqual(query_gemini(12345, directory)['state'], 'passed')
+            self.assertEqual(request.call_args.args, (12345, 'https://gemini.google.com/', directory))
+
+    def test_gemini_pass_precedes_quality_and_unknowns_remain_ranked(self):
+        base = {'max_ms': 10, 'success_rate': 1}
+        rows = [{**base, 'gemini': {'state': state},
+                 'quality': {'state': 'scored', 'quality_score': score}}
+                for state, score in [('region_rejected', 100), ('unknown', 99), ('passed', 1)] ]
+        self.assertEqual([r['gemini']['state'] for r in sorted(rows, key=ranking_key)],
+                         ['passed', 'unknown', 'region_rejected'])
+
     def test_quality_score_and_exit_are_validated(self):
         result = parse_quality({'ip': '8.8.8.8', 'fraudScore': 12, 'countryCode': 'US', 'asn': 15169})
         self.assertEqual(result['quality_score'], 88)

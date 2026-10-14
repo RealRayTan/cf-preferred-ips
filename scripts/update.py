@@ -180,7 +180,7 @@ def main():
             if report['passed']:
                 usable.append({**entrance, 'node_passed': True,
                                **{k: report[k] for k in ('success_rate', 'proxy_max_ms', 'proxy_median_ms',
-                                                        'download_kib_s', 'sustained_seconds', 'quality')}})
+                                                        'download_kib_s', 'sustained_seconds', 'quality', 'gemini')}})
     exit_summary = cross_check_exits(usable)
     by_ip = {r['ip']: r['exit_check'] for r in usable}
     for report in node_reports:
@@ -203,7 +203,11 @@ def main():
               'node_failures': dict(Counter(r['phase']+':'+r.get('failure', 'unknown') for r in node_reports if not r['passed'])),
               'validation_level': 'real_proxy_requests_and_transfer',
               'selected_count': len(selected), 'selected_countries': dict(Counter(r['country'] for r in selected)),
-              'selection_policy': 'global_quality_then_proxy_performance',
+              'selection_policy': 'gemini_web_then_quality_then_proxy_performance',
+              'gemini_web_check': {'method': 'public_web_page_v1',
+                                   'checked_states': dict(Counter(r['gemini']['state'] for r in usable)),
+                                   'selected_states': dict(Counter(r['gemini']['state'] for r in selected)),
+                                   'scope': 'Unauthenticated web page; not account, mobile app or chat acceptance'},
               'quality_scored_count': sum(r['quality']['state'] == 'scored' for r in usable),
               'quality_unknown_count': sum(r['quality']['state'] != 'scored' for r in usable),
               'quality_provider': 'IPPure',
@@ -223,7 +227,10 @@ def main():
                          f"IPPure scored: {status['quality_scored_count']}; unknown: {status['quality_unknown_count']}.\n\n"
                          f"IP2Location.io: {exit_summary['checked_exit_count']}/{exit_summary['unique_exit_count']} unique exits checked; "
                          f"{exit_summary['mismatched_node_count']} nodes with metadata differences.\n\n"
-                         'No country quotas. Higher quality means lower reported exit risk. Unknown scores use proxy performance; empty results preserve previous files.\n')
+                         f"Gemini public web checks: {status['gemini_web_check']['checked_states']}; "
+                         f"selected: {status['gemini_web_check']['selected_states']}.\n\n"
+                         'Gemini web passes rank first; unknowns remain eligible. Web checks do not prove mobile app or signed-in chat access. '
+                         'No country quotas. Higher quality means lower reported exit risk; empty results preserve previous files.\n')
     if not selected:
         raise RuntimeError('No nodes passed full proxy checks; existing lists preserved')
 

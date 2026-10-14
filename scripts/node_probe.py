@@ -69,6 +69,45 @@ def query_quality(port, directory):
         return {**unknown, 'failure': 'invalid_or_unavailable_response'}
 
 
+def classify_gemini(result, body):
+    """Public web-page evidence only; unknown markup never proves eligibility."""
+    report = {'state': 'unknown', 'method': 'public_web_page_v1',
+              'http_status': result.get('http_status', 0),
+              'duration_ms': result.get('duration_ms', 0)}
+    failure = result.get('failure')
+    if failure:
+        report['state'] = ('unknown' if failure in {'challenge_page', 'unexpected_http_status', 'unexpected_page'}
+                           else 'network_failed')
+        return {**report, 'reason': failure}
+    text = body.decode('utf-8', errors='replace')
+    lower = text.lower()
+    if any(marker in lower for marker in (
+        "gemini isn't currently supported in your country",
+        'gemini is not currently supported in your country',
+        'gemini isn’t currently supported in your country',
+        'gemini is not available in your country',
+        'gemini isn\u2019t available in your country',
+    )):
+        return {**report, 'state': 'region_rejected', 'reason': 'explicit_region_notice'}
+    # Community-observed page flag, not a documented Google API contract.
+    # A Google markup change must fall back to unknown instead of "blocked".
+    if 'gemini' in lower and re.search(r'45631641\s*,\s*null\s*,\s*true', text):
+        region = re.search(r',2,1,200,"([A-Z]{3})"', text)
+        return {**report, 'state': 'passed', 'reason': 'web_availability_marker',
+                **({'observed_region': region[1]} if region else {})}
+    return {**report, 'reason': 'unrecognized_page'}
+
+
+def query_gemini(port, directory):
+    try:
+        result = proxy_request(port, 'https://gemini.google.com/', directory)
+        body_file = directory / 'response.bin'
+        return classify_gemini(result, body_file.read_bytes() if body_file.exists() else b'')
+    except Exception:
+        return {'state': 'network_failed', 'method': 'public_web_page_v1',
+                'reason': 'probe_request_failed'}
+
+
 def load_profile(work):
     raw = os.getenv('NODE_PROFILE_JSON')
     if not raw and not os.getenv('GITHUB_ACTIONS'):
@@ -241,6 +280,7 @@ def check_node(ip, profile, binary, work):
             report.update({'passed': True, 'phase': 'complete', 'success_rate': 1.0,
                            'proxy_max_ms': max(timings), 'proxy_median_ms': round(statistics.median(timings), 1)})
             report['quality'] = query_quality(port, directory)
+            report['gemini'] = query_gemini(port, directory)
             return report
         except Exception:
             # Keep runtime logs, URLs and auth-bearing configuration out of public diagnostics.
@@ -259,6 +299,7 @@ def check_node(ip, profile, binary, work):
 def ranking_key(row):
     quality = row.get('quality', {})
     scored = quality.get('state') == 'scored' and isinstance(quality.get('quality_score'), (int, float))
-    return (-row.get('success_rate', 0), 0 if scored else 1,
+    gemini_rank = {'passed': 0, 'unknown': 1, 'network_failed': 2, 'region_rejected': 3}
+    return (-row.get('success_rate', 0), gemini_rank.get(row.get('gemini', {}).get('state'), 1), 0 if scored else 1,
             -quality['quality_score'] if scored else 0, row.get('proxy_max_ms', float('inf')),
             row.get('proxy_median_ms', float('inf')), -row.get('download_kib_s', 0), row['max_ms'])
