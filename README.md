@@ -1,66 +1,72 @@
-# Cloudflare 入口 IP 定时筛选
+# Cloudflare 入口优选与 EdgeTunnel 链式出口架构
 
-每天两次检查 Cloudflare 候选入口，验证实际转发、评估出口风险并复核出口信息，保留最多 9 个连接地址。
-
-本项目使用 IP2Location.io [IP geolocation](https://www.ip2location.io) web service 复核出口信息。
+本项目提供 Cloudflare 边缘优选入口与 EdgeTunnel 服务端分流方案。架构将网络入口握手与服务出站出口解耦，兼顾通用大流量访问的速度与 Gemini 等严风控服务的可用性。
 
 ```mermaid
-flowchart TB
-    client["客户端"]
+flowchart LR
+    client["客户端 (Shadowrocket)"]
     subgraph cf["Cloudflare 边缘网络"]
-        entry["网络入口"]
-        relay["边缘转发服务"]
-        entry <--> relay
+        entry["Anycast 优选入口 (CF-01 ~ CF-09)"]
+        worker["EdgeTunnel Worker 运行时"]
+        router{"命中 GO2SOCKS5 名单 ?"}
+        entry --> worker --> router
     end
-    destination["目标服务"]
-    client <-->|应用流量| entry
-    relay <-->|出站连接| destination
+    socks["后置 SOCKS5 代理 (干净出口 VPS)"]
+    dest_gen["通用网站 (YouTube / GitHub)"]
+    dest_ai["AI 服务 (Gemini / Google)"]
 
-    subgraph screening["GitHub Actions 定时筛选"]
-        schedule["入口初筛"] --> test["实际转发与传输验证"]
-        test --> quality["IPPure 出口评分"]
-        quality --> verify["IP2Location 出口信息复核"]
-        verify --> candidates["按质量与速度选取"]
-    end
-    candidates -.->|用于生成连接配置| relay
+    client -->|高可用 fallback 策略| entry
+    router -->|否: 直连出站 (无限流量)| dest_gen
+    router -->|是: 链式转发 (纯净 IP)| socks --> dest_ai
 ```
 
-客户端连接 Cloudflare 入口后，由部署在边缘的转发服务建立到目标服务的出站连接，并将响应传回客户端。图中省略了具体协议、认证和可选的中间转发环节。
+## 架构核心原则
 
-本仓库负责图中的定时检查与入口筛选。GitHub 不承载应用流量；筛选结果供转发服务生成连接配置时引用。
+- **入口与出口分离**。入口 Anycast IP 仅负责保障客户端到 Cloudflare 边缘的低延迟与抗丢包；外部目标网站（如 Gemini）识别的是 Worker 发起出站请求的出口 IP。
+- **双轨分流**。海量多媒体与下载流量由 Cloudflare 边缘免费直连；Gemini 等对 IP 纯净度和地区有严格要求的请求，由 Worker 链式跳转至后置 SOCKS5 代理。
+- **入口静态持久化**。取消 GitHub Actions 每日定时强制覆写，避免槽位底层 IP 频繁漂移导致本地断连。客户端配置采用 `fallback` 自动故障切换，提升网络容灾能力。
 
-## 自动筛选
+## EdgeTunnel 服务端配置
 
-GitHub Actions 按北京时间每天 **09:15、21:15** 运行，无需本地设备持续开机；实际启动时间可能因 GitHub 排队而延后。
+在 Cloudflare Pages 或 Workers 控制台设置以下环境变量，或在 `/admin` 后台保存：
 
-筛选按以下顺序进行：
+| 变量名 | 必填 | 示例 | 说明 |
+| :--- | :---: | :--- | :--- |
+| **SOCKS5** | ✅ | `user:password@198.51.100.1:1080` | 后置干净出口 SOCKS5 代理服务器地址与认证凭据 |
+| **GO2SOCKS5** | ✅ | `*google.com,*gemini.google.com` | 强制走 SOCKS5 代理的域名名单，多个域名用逗号分隔 |
 
-1. **入口初筛**：使用 [CFData-WEB](https://github.com/PoemMisty/CFData-WEB) 对 Cloudflare 官方 IPv4 网段抽样，再重复检查 HTTPS 连通性。
-2. **实际转发验证**：使用 [sing-box](https://github.com/SagerNet/sing-box) 建立经过认证的转发连接，完成三轮基准请求及 YouTube、X 页面访问。
-3. **传输检查**：下载目标页面资源，再进行短时持续传输，检查数据完整性和传输表现。
-4. **出口评分**：通过每个合格节点调用 [IPPure](https://ippure.com/MyIP-Info-API)，记录该次请求的出口 IP、地区和风险系数。
-5. **出口复核**：使用 IP2Location.io 免密钥 API 查询 IPPure 已测到的同一个出口，比较国家与 ASN，并记录基础公开代理检测结果。每轮按出口去重，同一出口只查询一次。
-6. **Gemini 网页检查**：通过同一个已认证的节点连接访问 Gemini 未登录网页，记录通过、地区拒绝、网络失败或无法判断。检测参考 [RegionRestrictionCheck 的页面标记方法](https://github.com/lmc999/RegionRestrictionCheck/blob/main/check.sh)，标记缺失、页面拦截或异常 HTTP 状态都不能当成地区拒绝。
-7. **排序与选取**：Gemini 网页检测通过的节点优先，其次为无法判断、网络失败、明确地区拒绝；每类中已取得评分的节点优先，按出口质量分从高到低排序，同分时比较实际转发响应和下载速度。质量分为 `100 − IPPure 风险系数`，分数越高表示该服务报告的出口风险越低。
+配置生效后，访问通用网站依然享受 Cloudflare 节点直出；访问 Gemini 时，Worker 自动将流量转发至 SOCKS5 节点出站，避开 Google 对 Cloudflare ASN 13335 机房网段的封锁。
 
-连接失败、TLS 异常、返回拦截页面或传输检查未通过的候选都会被淘汰。仅凭入口延迟，无法确认实际转发是否可用。
+## 客户端配置 (Shadowrocket)
 
-目标是保留最多 9 个入口，按 GitHub 测试机器的结果统一筛选，不设国家配额。Gemini 检测初期用于排序，不硬性淘汰节点；通过数量不足时仍保留其他状态的合格节点。IPPure 超时、返回异常或缺少有效评分时，节点标为质量未知，仍可按实际转发表现补齐。合格数量不足时只保留实际数量，没有合格结果时保留上次有效内容。
+客户端配置文件位于 `clients/shadowrocket.conf`，说明文档见 `clients/README.md`。
 
-IP2Location.io 无需注册或 API Key，免密钥接口每天最多 1,000 次查询。查询间隔至少一秒；接口异常或额度用尽时标为复核未知，地区或 ASN 不一致时记录差异。这些结果只辅助观察，不修改质量分或淘汰已通过实际转发检查的节点。
+配置已将 `CF-手动选择` 切换回 `CF-故障切换` (`fallback`)：
 
-筛选结果通过固定地址更新。节点采用固定序号名称 `CF-01` 至 `CF-09`；每轮更新对应的入口地址，评分变化不会改变名称。名称表示当前排序位置，同名节点不保证一直对应同一个 IP。客户端仍需更新订阅才能获取新地址，可通过自动更新和固定策略组减少手动操作。
+```ini
+[Proxy Group]
+CF-故障切换 = fallback,policy-regex-filter=^CF-0[1-9]$,interval=180,timeout=5,url=https://www.gstatic.com/generate_204
 
-## 结果的适用范围
+[Rule]
+RULE-SET,https://raw.githubusercontent.com/iab0x00/ProxyRules/main/Rule/AI.txt,CF-故障切换
+FINAL,CF-故障切换
+```
 
-入口机房信息只用于检测记录，不参与国家分配或节点命名。由于 Anycast 路由随访问地点变化，同一个入口在不同网络下可能连接到不同机房，云端排序也不代表本地线路的表现。
+当首选入口发生波动或超时时，小火箭在 5 秒内自动切换到下一个可用入口，无需人工干预。
 
-Gemini 检测摘要与各节点状态、出口质量分和查询状态保存在 `status.json` 中，不再写入节点名称。IPPure 的评分包含历史风险记录与推断，不是各目标网站的官方评分；接口仍处于测试阶段。访问 IPPure 时的出口也可能与访问其他网站时不同，因此高分不能保证 AI 服务可用，也不保证出口始终不变。
+## 链式路由验证
 
-IP2Location.io 免费接口用于定位与基础公开代理检测，不提供风险分。`is_proxy` 为否不代表没有使用 VPN 或其他代理；两家的地区、ASN 判断也可能因数据库更新而不同。[接口文档](https://www.ip2location.io/ip2location-documentation) · [套餐与额度](https://www.ip2location.io/pricing)
+仓库提供本地端到端验证脚本 `scripts/verify_chain.py`，用于断言链式代理与分流状态：
 
-检查覆盖入口、真实转发请求、有限时长的传输和 Gemini 未登录网页。Gemini 的通过状态仅表示检测时观察到网页可用性标记；该标记不是 Google 官方接口合同，页面改版可能使结果变为无法判断。检测不包含登录或实际对话，不能保证手机 App、账号地区资格或全天稳定性。入口地区与最终出口地区是两个独立概念，实际使用效果仍需在客户端验证。
+```bash
+# 执行本地链式路由与 Gemini 可达性检查
+python3 scripts/verify_chain.py --ip 188.114.98.219
+```
 
-2026-10-08，使用者已在 iOS 和 macOS 上完成订阅更新并确认节点可用，反馈使用效果比此前有所改善。这次验证针对当时的节点与使用线路，后续批次仍需以实际连接表现为准。
+测试覆盖两项核心指标：
+1. **通用出站验证**：测试经过节点后访问 Cloudflare trace 端点，获取直连出站 IP 与接入机房。
+2. **Gemini 出站验证**：测试通过节点访问 `https://gemini.google.com/`，验证是否返回 200/302，并确认未出现人机验证或国家地区限制警告。
 
-仓库只保存候选入口和检测结果。测试所需认证配置保存在 GitHub Secrets，公开结果不包含认证信息。
+## 定时任务与离线检测说明
+
+自动化 GitHub Actions 定时任务已禁用。避免云端美区测试机与国内本地运营商线路存在路由偏差，进而造成客户端订阅频繁被改写。用户可随时在 GitHub Actions 页面通过 `workflow_dispatch` 手动触发离线基准测试。

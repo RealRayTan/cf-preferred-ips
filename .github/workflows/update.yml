@@ -1,7 +1,5 @@
 name: Update preferred IPs
 on:
-  schedule:
-    - cron: '15 1,13 * * *'
   workflow_dispatch:
 permissions:
   contents: write
