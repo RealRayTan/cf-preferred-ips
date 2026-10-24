@@ -46,7 +46,7 @@ Anycast 路由由客户端所在的物理位置与运营商网络决定。云端
 - `scripts/node_probe.py`。本地 sing-box 运行时管理、配置生成与传输基准测速。
 - `scripts/update.py`。Cloudflare 官方 IP 网段抽样与候选节点筛选脚本。
 - `scripts/exit_lookup.py`。查询 IP2Location 接口并比对出口国家与 ASN。
-- `clients/shadowrocket.conf`。客户端配置文件，内置分流规则集与 `CF-故障切换` 策略组。
+- `clients/shadowrocket.conf`。客户端配置文件，内置分流规则集、`日常流媒体` 与 `AI-专线` 策略组。
 - `clients/README.md`。客户端导入与策略组说明。
 - `ip.txt` 与 `global.txt`。静态固化的 Cloudflare 优选 Anycast 入口列表。
 
@@ -76,7 +76,7 @@ Cloudflare Pages 默认的 `*.pages.dev` 域名在国内受限，且直接通过
 
 1. 在「配置」页面选择远程文件 `clients/shadowrocket.conf`，点击「从 URL 更新」。
 2. 确认首页顶部的「全局路由」设置为「**配置**」。
-3. 首页将展示 `CF-故障切换` 分组。小火箭会根据健康检查结果自动选择延迟最低的节点。
+3. 首页将展示 `日常流媒体` 与 `AI-专线` 分组。小火箭会根据分流规则自动选择最优通道。
 
 ### 4. 订阅更新建议
 

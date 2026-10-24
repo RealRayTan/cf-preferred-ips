@@ -46,7 +46,7 @@ This repository disables automated daily scans. This prevents fluctuating remote
 - `scripts/node_probe.py`. Manages the local sing-box test runtime, configuration generation, and transfer benchmarks.
 - `scripts/update.py`. Samples Cloudflare official IPv4 CIDR ranges and checks candidate entrances.
 - `scripts/exit_lookup.py`. Queries IP2Location to cross-check exit country and ASN data.
-- `clients/shadowrocket.conf`. Shadowrocket configuration file with ad blocking and `CF-故障切换` fallback routing.
+- `clients/shadowrocket.conf`. Shadowrocket configuration file with ad blocking, `日常流媒体` (daily streaming) and `AI-专线` (dedicated AI) routing.
 - `clients/README.md`. Setup guide for client configuration imports and proxy groups.
 - `ip.txt` and `global.txt`. Static preferred Cloudflare Anycast entrance lists.
 
@@ -78,7 +78,7 @@ General web traffic bypasses the upstream proxy and routes directly through Clou
 1. Open Shadowrocket and select the **Config** tab.
 2. Under remote files, select `clients/shadowrocket.conf` and tap **Update from URL**.
 3. Return to the home screen and verify that **Global Routing** is set to **Config**.
-4. The proxy group list displays `CF-故障切换`. The client selects the entrance with the lowest latency automatically.
+4. The proxy group list displays `日常流媒体` and `AI-专线`. The client automatically routes media and AI traffic through optimal paths.
 
 ### 4. Subscription update recommendations
 
