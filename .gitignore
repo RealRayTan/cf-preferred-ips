@@ -1,4 +1,7 @@
 .work/
 __pycache__/
 opencode.json
+clients/warp.conf
+clients/*.png
+
 
