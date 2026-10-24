@@ -38,13 +38,13 @@ class SubscriptionTests(unittest.TestCase):
     def test_slot_names_survive_score_and_address_changes(self):
         with TemporaryDirectory() as directory, patch('scripts.update.ROOT', Path(directory)):
             path = Path(directory) / 'ip.txt'
-            write_list('ip.txt', [candidate('192.0.2.1', score=90), candidate('192.0.2.2')])
+            write_list('ip.txt', [candidate('192.0.2.1', score=90)])
             before = path.read_text().splitlines()
-            write_list('ip.txt', [candidate('192.0.2.3'), candidate('192.0.2.4', score=10)])
+            write_list('ip.txt', [candidate('192.0.2.3', score=10)])
             after = path.read_text().splitlines()
             self.assertNotEqual(before, after)
-            self.assertEqual([line.split('#')[1] for line in before], ['CF-01', 'CF-02'])
-            self.assertEqual([line.split('#')[1] for line in after], ['CF-01', 'CF-02'])
+            self.assertEqual([line.split('#')[1] for line in before], ['CF-MEDIA'])
+            self.assertEqual([line.split('#')[1] for line in after], ['CF-MEDIA'])
 
     def test_empty_scan_preserves_last_subscription(self):
         with TemporaryDirectory() as directory, patch('scripts.update.ROOT', Path(directory)):

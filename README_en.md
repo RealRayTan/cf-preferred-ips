@@ -8,7 +8,7 @@ This project maintains Cloudflare preferred Anycast entrance lists and client ro
 flowchart LR
     client["Client (Shadowrocket)"]
     subgraph cf["Cloudflare Edge Network"]
-        entry["Preferred Anycast Entrances (CF-01 to CF-09)"]
+        entry["Preferred Anycast Entrance (CF-MEDIA)"]
         worker["EdgeTunnel Worker Runtime"]
         router{"Target matches GO2SOCKS5 ?"}
         entry --> worker --> router
@@ -48,7 +48,7 @@ This repository disables automated daily scans. This prevents fluctuating remote
 - `scripts/exit_lookup.py`. Queries IP2Location to cross-check exit country and ASN data.
 - `clients/shadowrocket.conf`. Shadowrocket configuration file with ad blocking, `日常流媒体` (daily streaming) and `AI-专线` (dedicated AI) routing.
 - `clients/README.md`. Setup guide for client configuration imports and proxy groups.
-- `ip.txt` and `global.txt`. Static preferred Cloudflare Anycast entrance lists.
+- `ip.txt` and `global.txt`. Static preferred Cloudflare Anycast entrance (`CF-MEDIA`).
 
 ## Configuration reference
 

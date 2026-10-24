@@ -118,10 +118,7 @@ def probe(ip):
 def write_list(name, rows):
     # Stable slot names let client policies survive changes to IPs and scores.
     if rows:
-        lines = []
-        for i, row in enumerate(rows[:LIST_SIZE], 1):
-            lines.append(f"{row['ip']}:443#CF-{i:02d}\n")
-        (ROOT / name).write_text(''.join(lines))
+        (ROOT / name).write_text(f"{rows[0]['ip']}:443#CF-MEDIA\n")
 
 
 def select_best(rows):

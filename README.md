@@ -8,7 +8,7 @@
 flowchart LR
     client["客户端 (Shadowrocket)"]
     subgraph cf["Cloudflare 边缘网络"]
-        entry["Anycast 优选入口 (CF-01 至 CF-09)"]
+        entry["Anycast 优选入口 (CF-MEDIA)"]
         worker["EdgeTunnel Worker 运行时"]
         router{"命中 GO2SOCKS5 域名 ?"}
         entry --> worker --> router
@@ -48,7 +48,7 @@ Anycast 路由由客户端所在的物理位置与运营商网络决定。云端
 - `scripts/exit_lookup.py`。查询 IP2Location 接口并比对出口国家与 ASN。
 - `clients/shadowrocket.conf`。客户端配置文件，内置分流规则集、`日常流媒体` 与 `AI-专线` 策略组。
 - `clients/README.md`。客户端导入与策略组说明。
-- `ip.txt` 与 `global.txt`。静态固化的 Cloudflare 优选 Anycast 入口列表。
+- `ip.txt` 与 `global.txt`。静态固化的 Cloudflare 优选 Anycast 入口 (`CF-MEDIA`)。
 
 ## 配置参考
 
@@ -76,7 +76,7 @@ Cloudflare Pages 默认的 `*.pages.dev` 域名在国内受限，且直接通过
 
 1. 在「配置」页面选择远程文件 `clients/shadowrocket.conf`，点击「从 URL 更新」。
 2. 确认首页顶部的「全局路由」设置为「**配置**」。
-3. 首页将展示 `日常流媒体` 与 `AI-专线` 分组。小火箭会根据分流规则自动选择最优通道。
+3. 首页将展示 `日常流媒体` 与 `AI-专线` 分组。小火箭会根据分流规则分别调度 `CF-MEDIA` 与 `CF-AI` 最优通道。
 
 ### 4. 订阅更新建议
 
