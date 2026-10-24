@@ -20,7 +20,7 @@ Apple、WeChat、Global、China 改为原生 Shadowrocket 格式；Apple、Globa
 
 策略组包含两大专线：
 - `日常流媒体`：默认直连 `CF-MEDIA`（由 EdgeTunnel 订阅提供），专职负责 YouTube 4K、Twitter/X、GitHub 及通用下载，享受极速千兆带宽。
-- `AI-专线`：默认直连 `CF-AI`（WireGuard 纯净出口），专职负责 Google、Gemini、OpenCode Magpie 等对出口 IP 敏感的业务。
+- `AI-专线`：独立调度 Gemini 等 AI 业务。当前处于 Serv00 审批过渡期，待云端 SOCKS5 链式出口配置就绪后即可完全自愈。
 
 无需开启频繁的心跳探测与节点竞速，长连接极其稳固，杜绝频繁切换导致的连接中断与 502 错误。
 
