@@ -26,4 +26,14 @@ Apple、WeChat、Global、China 改为原生 Shadowrocket 格式；Apple、Globa
 
 节点订阅更新与配置文件更新是两个独立设置。推荐使用本地测速固化的静态入口列表，并在小火箭中关闭频繁的自动订阅更新，避免由于入口 IP 频繁更换造成断连。
 
+## Clash Verge Rev (Windows / macOS)
+
+在 Clash Verge Rev（或 Mihomo 内核客户端）的「订阅」页面中导入 EdgeTunnel 订阅链接，并在「扩展配置 (Merge)」中引入 `clients/clash-verge.yaml`：
+
+```
+https://raw.githubusercontent.com/RealRayTan/cf-preferred-ips/main/clients/clash-verge.yaml
+```
+
+配置同样将分组对齐为 `日常流媒体` 与 `AI-专线`，节点由订阅中的 `CF-MEDIA` 自动提供，无需在客户端进行繁琐的手动配置。
+
 参考：[分组及自动更新说明](https://github.com/LOWERTOP/Shadowrocket/wiki) · [分组配置语法](https://github.com/LOWERTOP/Shadowrocket/blob/main/lazy_group.conf)
