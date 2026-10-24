@@ -1,5 +1,7 @@
 # Cloudflare Anycast 入口优选与 EdgeTunnel 链式出口架构
 
+[中文](README.md) | [English](README_en.md)
+
 本项目维护 Cloudflare 优选入口列表与客户端分流配置。系统将网络入口握手与服务出站出口解耦，兼顾通用多媒体流量的速度与 AI 服务的出站可用性。
 
 ```mermaid
